@@ -20,4 +20,16 @@ class JSONField extends AbstractField
         $this->assoc = new BooleanValue($assoc);
         return $this;
     }
+
+    /**
+     * @param bool $assoc
+     * @return bool
+     */
+    public function isAssoc(bool $assoc = true): bool
+    {
+        if ($this->assoc instanceof BooleanValue) {
+            return $this->assoc->getValue();
+        }
+        return false;
+    }
 }

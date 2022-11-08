@@ -459,16 +459,16 @@ final class Schema
 
     /**
      * @param string $field
-     * @return array
+     * @return AbstractField|null
      * @throws InvalidComponentException
      */
-    public function getField(string $field): array
+    public function getField(string $field):? AbstractField
     {
         $haystack = $this->getAllFields();
         if (isset($haystack[$field])) {
             return $haystack[$field];
         }
-        return [];
+        return null;
     }
 
     /**
@@ -520,10 +520,19 @@ final class Schema
      */
     public function getColumnsPointingToComponent(string $component, bool $matchOne = false)
     {
+        /** @var AbstractField[] $fields */
+        $fields = $this->getAllFields();
         $results = array_map(function ($item) {
             return $item['column'];
-        }, array_filter($this->getAllFields(), function ($field) use ($component) {
-            return $field['component'] === $component;
+        }, array_filter($fields, function ($field) use ($component) {
+            if ($field instanceof ForeignKeyField
+                || $field instanceof ForeignKeysField
+                || $field instanceof RelatedKeysField
+                || $field instanceof PivotField
+                || $field instanceof RelatedField) {
+                return $field->getComponent() === $component;
+            }
+            return false;
         }));
 
         if ($matchOne) {
@@ -533,5 +542,13 @@ final class Schema
             }
         }
         return array_values($results);
+    }
+
+    /**
+     * @return string
+     */
+    public function getTable(): string
+    {
+        return $this->table->getValue();
     }
 }
