@@ -28,6 +28,7 @@ use Lkt\Factory\Schemas\Fields\StringField;
 use Lkt\Factory\Schemas\Fields\UnixTimeStampField;
 use Lkt\Factory\Schemas\Values\ComponentValue;
 use Lkt\Factory\Schemas\Values\TableValue;
+use function Lkt\Tools\Arrays\getArrayFirstPosition;
 
 final class Schema
 {
@@ -127,7 +128,9 @@ final class Schema
         $this->table = new TableValue($table);
         $this->component = new ComponentValue($component);
         $this->pivot = $isPivot;
-        $this->setIdField();
+        if (!$isPivot) {
+            $this->setIdField();
+        }
     }
 
     /**
@@ -369,6 +372,7 @@ final class Schema
                         $ins->addField(
                             PivotField::define($field, trim($fieldConfig['column']))
                                 ->setComponent($fieldConfig['component'])
+                                ->setPivotComponent(trim($fieldConfig['pivot']))
                                 ->setWhere($where)
                                 ->setOrder($order)
                         );
@@ -493,23 +497,37 @@ final class Schema
 
     /**
      * @param string $component
-     * @param bool $matchOne
      * @return array
      * @throws InvalidComponentException
      */
-    public function getFieldsPointingToComponent(string $component, bool $matchOne = false): array
+    public function getFieldsPointingToComponent(string $component): array
     {
-        $results = array_filter($this->getAllFields(), function ($field) use ($component) {
-            return $field['component'] === $component;
-        });
-
-        if ($matchOne) {
-            $results = array_values($results);
-            if (count($results) > 0) {
-                $results = $results[0];
+        /** @var AbstractField[] $fields */
+        $fields = $this->getAllFields();
+        return array_filter($fields, function ($field) use ($component) {
+            if ($field instanceof ForeignKeyField
+                || $field instanceof ForeignKeysField
+                || $field instanceof RelatedKeysField
+                || $field instanceof PivotField
+                || $field instanceof RelatedField) {
+                return $field->getComponent() === $component;
             }
+            return false;
+        });
+    }
+
+    /**
+     * @param string $component
+     * @return AbstractField|null
+     * @throws InvalidComponentException
+     */
+    public function getOneFieldPointingToComponent(string $component):? AbstractField
+    {
+        $r = $this->getFieldsPointingToComponent($component);
+        if (count($r) > 0) {
+            return getArrayFirstPosition($r);
         }
-        return $results;
+        return null;
     }
 
     /**
@@ -523,7 +541,7 @@ final class Schema
         /** @var AbstractField[] $fields */
         $fields = $this->getAllFields();
         $results = array_map(function ($item) {
-            return $item['column'];
+            return $item->getColumn();
         }, array_filter($fields, function ($field) use ($component) {
             if ($field instanceof ForeignKeyField
                 || $field instanceof ForeignKeysField
