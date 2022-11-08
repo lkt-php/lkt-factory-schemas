@@ -466,7 +466,7 @@ final class Schema
      * @return AbstractField|null
      * @throws InvalidComponentException
      */
-    public function getField(string $field):? AbstractField
+    public function getField(string $field): ?AbstractField
     {
         $haystack = $this->getAllFields();
         if (isset($haystack[$field])) {
@@ -477,10 +477,20 @@ final class Schema
 
     /**
      * @param bool $asString
-     * @return string|string[]
+     * @return int[]|mixed|string|string[]
+     * @throws InvalidComponentException
      */
     public function getIdColumn(bool $asString = false)
     {
+        if (count($this->idColumn) === 1 && $this->isPivot()) {
+            $fields = array_filter($this->getAllFields(), function (AbstractField $field) {
+                return $field instanceof ForeignKeyField;
+            });
+
+            $keys = array_keys($fields);
+            $this->idColumn = $keys;
+        }
+
         if ($asString) {
             return implode('-', $this->idColumn);
         }
@@ -521,7 +531,7 @@ final class Schema
      * @return AbstractField|null
      * @throws InvalidComponentException
      */
-    public function getOneFieldPointingToComponent(string $component):? AbstractField
+    public function getOneFieldPointingToComponent(string $component): ?AbstractField
     {
         $r = $this->getFieldsPointingToComponent($component);
         if (count($r) > 0) {
