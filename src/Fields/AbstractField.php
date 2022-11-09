@@ -23,11 +23,17 @@ abstract class AbstractField
         $this->column = new FieldColumnValue($column, $this->name->getValue());
     }
 
+    /**
+     * @return string
+     */
     final public function getName(): string
     {
         return $this->name->getValue();
     }
 
+    /**
+     * @return string
+     */
     final public function getColumn(): string
     {
         return $this->column->getValue();

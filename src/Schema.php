@@ -15,6 +15,7 @@ use Lkt\Factory\Schemas\Fields\FloatField;
 use Lkt\Factory\Schemas\Fields\ForeignKeyField;
 use Lkt\Factory\Schemas\Fields\ForeignKeysField;
 use Lkt\Factory\Schemas\Fields\HTMLField;
+use Lkt\Factory\Schemas\Fields\IdField;
 use Lkt\Factory\Schemas\Fields\ImageField;
 use Lkt\Factory\Schemas\Fields\IntegerField;
 use Lkt\Factory\Schemas\Fields\JSONField;
@@ -75,7 +76,9 @@ final class Schema
     /** @var ComponentValue */
     protected $component;
 
-    protected $idColumn = ['id'];
+    /** @var AbstractField[] */
+    protected $idFields = [];
+    protected $idColumns = [];
     protected $fields = [];
 
     // Pivot exclusive data
@@ -128,22 +131,6 @@ final class Schema
         $this->table = new TableValue($table);
         $this->component = new ComponentValue($component);
         $this->pivot = $isPivot;
-        if (!$isPivot) {
-            $this->setIdField();
-        }
-    }
-
-    /**
-     * @param string $field
-     * @param string $dbCol
-     * @return $this
-     * @throws Exceptions\InvalidFieldNameException
-     */
-    public function setIdField(string $field = 'id', string $dbCol = 'id'): self
-    {
-        $this->idColumn = [$field];
-        $this->addField(IntegerField::define('id'));
-        return $this;
     }
 
     /**
@@ -185,7 +172,7 @@ final class Schema
     {
         return [
             'table' => $this->table->getValue(),
-            'idColumn' => $this->pivot ? $this->idColumn : $this->idColumn[0],
+            'idColumn' => $this->pivot ? $this->idFields : $this->idFields[0],
             'pivot' => $this->pivot,
             'instance' => $this->instanceSettings->toArray(),
             'base' => $this->instanceSettings->hasBaseComponent() ? $this->instanceSettings->getBaseComponent() : '',
@@ -252,7 +239,8 @@ final class Schema
         $ins->setInstanceSettings($instanceSettings);
 
         if (!isset($data['pivot']) || !$data['pivot']) {
-            $ins->setIdField($data['idColumn']);
+
+            $idColumn = is_array($data['idColumn']) ? trim($data['idColumn'][0]) : trim($data['idColumn']);
 
             foreach ($data['fields'] as $field => $fieldConfig) {
 
@@ -279,6 +267,11 @@ final class Schema
                 $assoc = false;
                 if (isset($fieldConfig['assoc']) && $fieldConfig['assoc'] === true) {
                     $assoc = true;
+                }
+
+                if ($field === $idColumn) {
+                    $ins->addField(IdField::define($field, trim($fieldConfig['column'])));
+                    continue;
                 }
 
                 switch ($fieldConfig['type']) {
@@ -472,29 +465,67 @@ final class Schema
         if (isset($haystack[$field])) {
             return $haystack[$field];
         }
+
+        // Catch foreign keys cast to integer keys
+        $l = strlen($field);
+        $endsWithId = substr($field, $l - 2, 2) === 'Id';
+
+        if (!$endsWithId) {
+            return null;
+        }
+
+        $keyWithoutId = substr($field, 0, $l - 2);
+        if (isset($haystack[$keyWithoutId]) && $haystack[$keyWithoutId] instanceof ForeignKeyField) {
+            return $haystack[$keyWithoutId];
+        }
         return null;
     }
 
     /**
-     * @param bool $asString
-     * @return int[]|mixed|string|string[]
+     * @return AbstractField[]
      * @throws InvalidComponentException
      */
-    public function getIdColumn(bool $asString = false)
+    public function getIdentifiers(): array
     {
-        if (count($this->idColumn) === 1 && $this->isPivot()) {
-            $fields = array_filter($this->getAllFields(), function (AbstractField $field) {
-                return $field instanceof ForeignKeyField;
+        if (count($this->idFields) > 0) {
+            return $this->idFields;
+        }
+
+        /** @var AbstractField[] $stack */
+        $stack = $this->getAllFields();
+
+        if ($this->isPivot()) {
+            $fields = array_filter($stack, function (AbstractField $field) {
+                return $field instanceof PivotLeftIdField || $field instanceof PivotRightIdField;
             });
 
-            $keys = array_keys($fields);
-            $this->idColumn = $keys;
+            $this->idColumns = array_keys($fields);
+            $this->idFields = array_values($fields);
+            return $this->idFields;
         }
 
-        if ($asString) {
-            return implode('-', $this->idColumn);
-        }
-        return $this->idColumn;
+        $fields = array_filter($stack, function (AbstractField $field) {
+            return $field instanceof IdField;
+        });
+
+        $this->idColumns = array_keys($fields);
+        $this->idFields = array_values($fields);
+        return $this->idFields;
+    }
+
+    public function getIdString()
+    {
+        $this->getIdentifiers();
+        return implode('-', $this->idColumns);
+    }
+
+    /**
+     * @return array|mixed
+     */
+    public function getIdColumn()
+    {
+        $this->getIdentifiers();
+        return $this->idColumns;
     }
 
     /**
