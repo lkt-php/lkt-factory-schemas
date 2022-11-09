@@ -5,6 +5,7 @@ namespace Lkt\Factory\Schemas;
 use Lkt\ColumnTypes\Enums\ColumnType;
 use Lkt\Factory\Schemas\Exceptions\InvalidComponentException;
 use Lkt\Factory\Schemas\Exceptions\InvalidTableException;
+use Lkt\Factory\Schemas\Exceptions\SchemaNotDefinedException;
 use Lkt\Factory\Schemas\Fields\AbstractField;
 use Lkt\Factory\Schemas\Fields\BooleanField;
 use Lkt\Factory\Schemas\Fields\ColorField;
@@ -63,11 +64,24 @@ final class Schema
 
     /**
      * @param string $code
-     * @return mixed
+     * @return static
+     * @throws SchemaNotDefinedException
      */
-    public static function get(string $code)
+    public static function get(string $code): self
     {
+        if (!static::$stack[$code] instanceof Schema) {
+            throw new SchemaNotDefinedException($code);
+        }
         return static::$stack[$code];
+    }
+
+    /**
+     * @param string $code
+     * @return bool
+     */
+    public static function exists(string $code): bool
+    {
+        return static::$stack[$code] instanceof Schema;
     }
 
     /** @var TableValue */
