@@ -90,6 +90,8 @@ final class Schema
     /** @var ComponentValue */
     protected $component;
 
+    protected $databaseConnector = '';
+
     /** @var AbstractField[] */
     protected $idFields = [];
     protected $idColumns = [];
@@ -171,7 +173,11 @@ final class Schema
      */
     public function addField(AbstractField $field): self
     {
-        $this->fields[$field->getName()] = $field;
+        $name = $field->getName();
+        if (isset($this->fields[$name]) && $this->fields[$name] instanceof AbstractField) {
+            throw new \Exception("Field '{$name}' already registered in schema '{$this->getComponent()}'");
+        }
+        $this->fields[$name] = $field;
         return $this;
     }
 
@@ -623,5 +629,23 @@ final class Schema
     public function getTable(): string
     {
         return $this->table->getValue();
+    }
+
+    /**
+     * @param string $connectorName
+     * @return $this
+     */
+    public function setDatabaseConnector(string $connectorName): self
+    {
+        $this->databaseConnector = $connectorName;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDatabaseConnector(): string
+    {
+        return $this->databaseConnector;
     }
 }
