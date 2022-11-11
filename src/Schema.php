@@ -34,10 +34,11 @@ use function Lkt\Tools\Arrays\getArrayFirstPosition;
 
 final class Schema
 {
+    /** @var Schema[] */
     private static $stack = [];
 
     /**
-     * @return array
+     * @return Schema[]
      */
     public static function getStack(): array
     {
@@ -59,7 +60,7 @@ final class Schema
     public static function add(Schema $schema)
     {
         $code = $schema->getComponent();
-        static::$stack[$code] = $schema;
+        self::$stack[$code] = $schema;
     }
 
     /**
@@ -69,10 +70,10 @@ final class Schema
      */
     public static function get(string $code): self
     {
-        if (!static::$stack[$code] instanceof Schema) {
+        if (!self::$stack[$code] instanceof Schema) {
             throw new SchemaNotDefinedException($code);
         }
-        return static::$stack[$code];
+        return self::$stack[$code];
     }
 
     /**
@@ -81,7 +82,7 @@ final class Schema
      */
     public static function exists(string $code): bool
     {
-        return static::$stack[$code] instanceof Schema;
+        return self::$stack[$code] instanceof Schema;
     }
 
     /** @var TableValue */
@@ -367,6 +368,7 @@ final class Schema
                             RelatedField::define($field, trim($fieldConfig['column']))
                                 ->setComponent($fieldConfig['component'])
                                 ->setWhere($where)
+                                ->setOrder($order)
                                 ->setIsSoftTyped($softTyped)
                         );
                         break;
