@@ -96,6 +96,8 @@ final class Schema
     /** @var AbstractField[] */
     protected $idFields = [];
     protected $idColumns = [];
+
+    /** @var AbstractField[] */
     protected $fields = [];
 
     // Pivot exclusive data
@@ -171,6 +173,7 @@ final class Schema
     /**
      * @param AbstractField $field
      * @return $this
+     * @throws \Exception
      */
     public function addField(AbstractField $field): self
     {
@@ -439,8 +442,9 @@ final class Schema
     }
 
     /**
-     * @return array
+     * @return AbstractField[]
      * @throws InvalidComponentException
+     * @throws SchemaNotDefinedException
      */
     public function getAllFields(): array
     {
@@ -480,6 +484,7 @@ final class Schema
      * @param string $field
      * @return AbstractField|null
      * @throws InvalidComponentException
+     * @throws SchemaNotDefinedException
      */
     public function getField(string $field): ?AbstractField
     {
@@ -506,6 +511,7 @@ final class Schema
     /**
      * @return AbstractField[]
      * @throws InvalidComponentException
+     * @throws SchemaNotDefinedException
      */
     public function getIdentifiers(): array
     {
@@ -535,6 +541,10 @@ final class Schema
         return $this->idFields;
     }
 
+    /**
+     * @return string
+     * @throws InvalidComponentException
+     */
     public function getIdString()
     {
         $this->getIdentifiers();
@@ -543,6 +553,7 @@ final class Schema
 
     /**
      * @return array|mixed
+     * @throws InvalidComponentException
      */
     public function getIdColumn()
     {

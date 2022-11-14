@@ -55,4 +55,12 @@ class FileField extends AbstractField
         }
         return '';
     }
+
+    /**
+     * @return bool
+     */
+    final public function hasPublicPath(): bool
+    {
+        return $this->getPublicPath() !== '';
+    }
 }

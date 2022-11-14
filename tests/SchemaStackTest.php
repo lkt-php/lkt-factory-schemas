@@ -4,7 +4,7 @@ namespace Lkt\Factory\Schemas\Tests;
 
 use Lkt\Factory\Schemas\Exceptions\InvalidComponentException;
 use Lkt\Factory\Schemas\Exceptions\InvalidTableException;
-use Lkt\Factory\Schemas\Fields\IntegerField;
+use Lkt\Factory\Schemas\Fields\IdField;
 use Lkt\Factory\Schemas\Fields\StringField;
 use Lkt\Factory\Schemas\Schema;
 use PHPUnit\Framework\TestCase;
@@ -20,7 +20,7 @@ class SchemaStackTest extends TestCase
 
         Schema::add(
             Schema::table('users', 'users')
-                ->addField(IntegerField::define('id'))
+                ->addField(IdField::define('id'))
                 ->addField(StringField::define('name'))
         );
         $this->assertEquals(1, Schema::getCount());
@@ -55,7 +55,7 @@ class SchemaStackTest extends TestCase
         /** @var Schema $schema */
         $schema = Schema::get('users');
 
-        $this->assertEquals('id', $schema->getIdColumn(true));
+        $this->assertEquals(['id'], $schema->getIdColumn());
         $this->assertEquals(['id', 'name'], array_keys($schema->getAllFields()));
     }
 }

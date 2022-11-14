@@ -54,6 +54,8 @@ class SchemaInstanceTest extends TestCase
         $this->assertEquals(__DIR__ . '/Assets/Generated', $schema->getInstanceSettings()->getWhereStoreGeneratedClass());
         $this->assertEquals('', $schema->getInstanceSettings()->getClassToBeExtended());
         $this->assertEquals('test-component', $schema->getInstanceSettings()->getBaseComponent());
+
+        $this->assertEquals(__DIR__ . '/Assets/Generated/GeneratedUser.php', $schema->getInstanceSettings()->getGeneratedClassFullPath());
     }
 
 }

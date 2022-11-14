@@ -44,6 +44,60 @@ final class InstanceSettings
     }
 
     /**
+     * @return array
+     */
+    public function getImplementedInterfaces(): array
+    {
+        return $this->implementsInterfaces;
+    }
+
+    /**
+     * @return array
+     */
+    public function getUsedTraits(): array
+    {
+        return $this->traits;
+    }
+
+    /**
+     * @return string
+     */
+    public function getImplementedInterfacesAsString(): string
+    {
+        if ($this->hasImplementedInterfaces()) {
+            return '\\' . implode(',\\', $this->getImplementedInterfaces());
+        }
+        return '';
+    }
+
+    /**
+     * @return string
+     */
+    public function getUsedTraitsAsString(): string
+    {
+        if ($this->hasUsedTraits()) {
+            return '\\' . implode(',\\', $this->getUsedTraits());
+        }
+        return '';
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasImplementedInterfaces(): bool
+    {
+        return count($this->implementsInterfaces) > 0;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasUsedTraits(): bool
+    {
+        return count($this->traits) > 0;
+    }
+
+    /**
      * @throws InvalidSchemaAppClassException
      */
     public function __construct(string $appClass)
@@ -141,6 +195,14 @@ final class InstanceSettings
     }
 
     /**
+     * @return bool
+     */
+    public function hasWhereStoreGeneratedClass(): bool
+    {
+        return $this->getWhereStoreGeneratedClass() !== '';
+    }
+
+    /**
      * @param string $name
      * @return $this
      */
@@ -167,6 +229,17 @@ final class InstanceSettings
         return $class !== ''
             && class_exists($class)
             && defined("{$class}::GENERATED_TYPE");
+    }
+
+    public function getGeneratedClassFullPath(): string
+    {
+        $r = '';
+        if ($this->hasWhereStoreGeneratedClass()) {
+            $r .= $this->getWhereStoreGeneratedClass() . '/';
+        }
+
+        $r .= $this->getClassNameForGeneratedClass() . '.php';
+        return $r;
     }
 
     /**

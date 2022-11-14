@@ -28,6 +28,6 @@ trait FieldWithComponentOptionTrait
         if ($this->component instanceof ComponentValue) {
             return $this->component->getValue();
         }
-        return false;
+        return '';
     }
 }
