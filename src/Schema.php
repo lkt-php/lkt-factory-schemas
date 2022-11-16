@@ -3,6 +3,10 @@
 namespace Lkt\Factory\Schemas;
 
 use Lkt\ColumnTypes\Enums\ColumnType;
+use Lkt\Factory\Schemas\CRUDs\AbstractCRUD;
+use Lkt\Factory\Schemas\CRUDs\CreateHandler;
+use Lkt\Factory\Schemas\CRUDs\DeleteHandler;
+use Lkt\Factory\Schemas\CRUDs\UpdateHandler;
 use Lkt\Factory\Schemas\Exceptions\InvalidComponentException;
 use Lkt\Factory\Schemas\Exceptions\InvalidTableException;
 use Lkt\Factory\Schemas\Exceptions\SchemaNotDefinedException;
@@ -100,6 +104,9 @@ final class Schema
     /** @var AbstractField[] */
     protected $fields = [];
 
+    /** @var AbstractCRUD[] */
+    protected $crud = [];
+
     // Pivot exclusive data
     protected $pivot = false;
 //    protected $composition = [];
@@ -169,6 +176,53 @@ final class Schema
     {
         return $this->instanceSettings;
     }
+
+    /**
+     * @param AbstractCRUD $crud
+     * @return $this
+     */
+    public function addCRUD(AbstractCRUD $crud): self
+    {
+        $this->crud[] = $crud;
+        return $this;
+    }
+
+    /**
+     * @return CreateHandler|null
+     */
+    public function getCreateHandler():?CreateHandler
+    {
+        $data = array_values(array_filter($this->crud, function ($crud) { return $crud instanceof CreateHandler;}));
+        if (count($data) > 0) {
+            return $data[0];
+        }
+        return null;
+    }
+
+    /**
+     * @return DeleteHandler|null
+     */
+    public function getDeleteHandler():?DeleteHandler
+    {
+        $data = array_values(array_filter($this->crud, function ($crud) { return $crud instanceof DeleteHandler;}));
+        if (count($data) > 0) {
+            return $data[0];
+        }
+        return null;
+    }
+
+    /**
+     * @return DeleteHandler|null
+     */
+    public function getUpdateHandler():?UpdateHandler
+    {
+        $data = array_values(array_filter($this->crud, function ($crud) { return $crud instanceof UpdateHandler;}));
+        if (count($data) > 0) {
+            return $data[0];
+        }
+        return null;
+    }
+
 
     /**
      * @param AbstractField $field
@@ -354,7 +408,7 @@ final class Schema
                         $ins->addField(
                             FileField::define($field, trim($fieldConfig['column']))
                                 ->setStorePath(trim($fieldConfig['storePath']))
-                                ->setPublicPath(trim($fieldConfig['publicPath']))
+                                ->setPublicPath(trim($fieldConfig['public']))
                         );
                         break;
 
@@ -362,7 +416,7 @@ final class Schema
                         $ins->addField(
                             ImageField::define($field, trim($fieldConfig['column']))
                                 ->setStorePath(trim($fieldConfig['storePath']))
-                                ->setPublicPath(trim($fieldConfig['publicPath']))
+                                ->setPublicPath(trim($fieldConfig['public']))
                         );
                         break;
 
