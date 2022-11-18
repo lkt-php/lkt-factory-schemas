@@ -3,6 +3,7 @@
 namespace Lkt\Factory\Schemas\Fields;
 
 use Lkt\Factory\Schemas\Traits\FieldWithComponentOptionTrait;
+use Lkt\Factory\Schemas\Traits\FieldWithMultipleReferencesTrait;
 use Lkt\Factory\Schemas\Traits\FieldWithOrderOptionTrait;
 use Lkt\Factory\Schemas\Traits\FieldWithSingleModeOptionTrait;
 use Lkt\Factory\Schemas\Traits\FieldWithSoftTypedOptionTrait;
@@ -14,5 +15,6 @@ class RelatedField extends AbstractField
         FieldWithWhereOptionTrait,
         FieldWithOrderOptionTrait,
         FieldWithSoftTypedOptionTrait,
-        FieldWithSingleModeOptionTrait;
+        FieldWithSingleModeOptionTrait,
+        FieldWithMultipleReferencesTrait;
 }

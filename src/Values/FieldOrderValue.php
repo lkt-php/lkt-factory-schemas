@@ -14,6 +14,10 @@ final class FieldOrderValue
         if (!$value) {
             $value = [];
         }
+
+        if (!is_array($value)) {
+            $value = [$value];
+        }
         $this->value = $value;
     }
 

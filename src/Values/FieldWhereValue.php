@@ -14,6 +14,9 @@ final class FieldWhereValue
         if (!$value) {
             $value = [];
         }
+        if (!is_array($value)) {
+            $value = [$value];
+        }
         $this->value = $value;
     }
 
