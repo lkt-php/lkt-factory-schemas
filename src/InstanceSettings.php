@@ -20,6 +20,7 @@ final class InstanceSettings
     private $whereStoreGeneratedClass;
     private $classToBeExtended;
     private $baseComponent;
+    private $queryCallerClassName;
     protected $implementsInterfaces = [];
     protected $traits = [];
 
@@ -184,12 +185,33 @@ final class InstanceSettings
     }
 
     /**
+     * @param string $name
+     * @return $this
+     */
+    public function setQueryCallerClassName(string $name): InstanceSettings
+    {
+        $this->queryCallerClassName = new StringValue($name);
+        return $this;
+    }
+
+    /**
      * @return string
      */
     public function getWhereStoreGeneratedClass(): string
     {
         if ($this->whereStoreGeneratedClass instanceof StringValue) {
             return $this->whereStoreGeneratedClass->getValue();
+        }
+        return '';
+    }
+
+    /**
+     * @return string
+     */
+    public function getQueryCallerClassName(): string
+    {
+        if ($this->queryCallerClassName instanceof StringValue) {
+            return $this->queryCallerClassName->getValue();
         }
         return '';
     }
@@ -239,6 +261,17 @@ final class InstanceSettings
         }
 
         $r .= $this->getClassNameForGeneratedClass() . '.php';
+        return $r;
+    }
+
+    public function getQueryCallerFullPath(): string
+    {
+        $r = '';
+        if ($this->hasWhereStoreGeneratedClass()) {
+            $r .= $this->getWhereStoreGeneratedClass() . '/';
+        }
+
+        $r .= $this->getQueryCallerClassName() . '.php';
         return $r;
     }
 
