@@ -216,9 +216,15 @@ final class InstanceSettings
         return '';
     }
 
-    /**
-     * @return bool
-     */
+    public function getQueryCallerFQDN(): string
+    {
+        $r = [$this->getNamespaceForGeneratedClass()];
+        if ($this->queryCallerClassName instanceof StringValue) {
+            $r[] = $this->queryCallerClassName->getValue();
+        }
+        return implode('\\', $r);
+    }
+
     public function hasWhereStoreGeneratedClass(): bool
     {
         return $this->getWhereStoreGeneratedClass() !== '';
