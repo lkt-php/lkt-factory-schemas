@@ -3,11 +3,13 @@
 namespace Lkt\Factory\Schemas\Fields;
 
 use Lkt\Factory\Schemas\Traits\FieldWithCompressOptionTrait;
+use Lkt\Factory\Schemas\Traits\FieldWithNullOptionTrait;
 use Lkt\Factory\Schemas\Values\BooleanValue;
 
 class JSONField extends AbstractField
 {
-    use FieldWithCompressOptionTrait;
+    use FieldWithCompressOptionTrait,
+        FieldWithNullOptionTrait;
 
     protected $assoc;
 

@@ -3,6 +3,7 @@
 namespace Lkt\Factory\Schemas\Fields;
 
 use Lkt\Factory\Schemas\Traits\FieldWithAllowAnonymousOptionTrait;
+use Lkt\Factory\Schemas\Traits\FieldWithNullOptionTrait;
 use Lkt\Factory\Schemas\Traits\FieldWithComponentOptionTrait;
 use Lkt\Factory\Schemas\Traits\FieldWithOrderOptionTrait;
 use Lkt\Factory\Schemas\Traits\FieldWithSoftTypedOptionTrait;
@@ -14,5 +15,6 @@ class ForeignKeysField extends AbstractField
         FieldWithWhereOptionTrait,
         FieldWithOrderOptionTrait,
         FieldWithSoftTypedOptionTrait,
-        FieldWithAllowAnonymousOptionTrait;
+        FieldWithAllowAnonymousOptionTrait,
+        FieldWithNullOptionTrait;
 }

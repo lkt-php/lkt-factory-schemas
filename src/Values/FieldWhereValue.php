@@ -2,6 +2,8 @@
 
 namespace Lkt\Factory\Schemas\Values;
 
+use Lkt\QueryBuilding\Where;
+
 final class FieldWhereValue
 {
     private $value = [];
@@ -14,7 +16,11 @@ final class FieldWhereValue
         if (!$value) {
             $value = [];
         }
-        if (!is_array($value)) {
+
+        if ($value instanceof Where) {
+            $value = [$value->whereConstraintsToString()];
+        }
+        elseif (!is_array($value)) {
             $value = [$value];
         }
         $this->value = $value;

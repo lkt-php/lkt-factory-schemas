@@ -3,10 +3,13 @@
 namespace Lkt\Factory\Schemas\Fields;
 
 use Lkt\Factory\Schemas\Exceptions\InvalidFieldFilePathException;
+use Lkt\Factory\Schemas\Traits\FieldWithNullOptionTrait;
 use Lkt\Factory\Schemas\Values\FieldFilePathValue;
 
 class FileField extends AbstractField
 {
+    use FieldWithNullOptionTrait;
+
     protected $storePath;
     protected $publicPath;
 

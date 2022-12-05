@@ -21,6 +21,7 @@ final class InstanceSettings
     private $classToBeExtended;
     private $baseComponent;
     private $queryCallerClassName;
+    private $whereClassName;
     protected $implementsInterfaces = [];
     protected $traits = [];
 
@@ -195,6 +196,16 @@ final class InstanceSettings
     }
 
     /**
+     * @param string $name
+     * @return $this
+     */
+    public function setWhereClassName(string $name): InstanceSettings
+    {
+        $this->whereClassName = new StringValue($name);
+        return $this;
+    }
+
+    /**
      * @return string
      */
     public function getWhereStoreGeneratedClass(): string
@@ -216,11 +227,31 @@ final class InstanceSettings
         return '';
     }
 
+    /**
+     * @return string
+     */
+    public function getWhereClassName(): string
+    {
+        if ($this->whereClassName instanceof StringValue) {
+            return $this->whereClassName->getValue();
+        }
+        return '';
+    }
+
     public function getQueryCallerFQDN(): string
     {
         $r = [$this->getNamespaceForGeneratedClass()];
         if ($this->queryCallerClassName instanceof StringValue) {
             $r[] = $this->queryCallerClassName->getValue();
+        }
+        return implode('\\', $r);
+    }
+
+    public function getWhereFQDN(): string
+    {
+        $r = [$this->getNamespaceForGeneratedClass()];
+        if ($this->whereClassName instanceof StringValue) {
+            $r[] = $this->whereClassName->getValue();
         }
         return implode('\\', $r);
     }
@@ -278,6 +309,17 @@ final class InstanceSettings
         }
 
         $r .= $this->getQueryCallerClassName() . '.php';
+        return $r;
+    }
+
+    public function getWhereFullPath(): string
+    {
+        $r = '';
+        if ($this->hasWhereStoreGeneratedClass()) {
+            $r .= $this->getWhereStoreGeneratedClass() . '/';
+        }
+
+        $r .= $this->getWhereClassName() . '.php';
         return $r;
     }
 
