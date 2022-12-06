@@ -2,7 +2,7 @@
   "name": "lkt/factory-schemas",
   "description": "LKT Factory Schemas",
   "type": "library",
-  "version": "1.0.13",
+  "version": "1.0.14",
   "require": {
     "php": ">=7.2.0",
     "lkt/column-types": "^1.0",

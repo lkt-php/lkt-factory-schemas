@@ -114,6 +114,9 @@ final class Schema
     /** @var InstanceSettings */
     protected $instanceSettings;
 
+    protected $countableField = '';
+    protected $itemsPerPage = 0;
+
     /**
      * @param string $table
      * @param string $component
@@ -159,6 +162,38 @@ final class Schema
         $this->pivot = $isPivot;
     }
 
+    public function setCountableField(string $fieldName): self
+    {
+        $this->countableField = $fieldName;
+        return $this;
+    }
+
+    public function getCountableField(): string
+    {
+        return $this->countableField;
+    }
+
+    public function hasCountableField(): bool
+    {
+        return $this->countableField !== '';
+    }
+
+    public function setItemsPerPage(int $itemsPerPage): self
+    {
+        $this->itemsPerPage = $itemsPerPage;
+        return $this;
+    }
+
+    public function getItemsPerPage(): int
+    {
+        return $this->itemsPerPage;
+    }
+
+    public function hasItemsPerPage(): bool
+    {
+        return $this->itemsPerPage > 0;
+    }
+
     /**
      * @param InstanceSettings $config
      * @return $this
@@ -190,9 +225,11 @@ final class Schema
     /**
      * @return CreateHandler|null
      */
-    public function getCreateHandler():?CreateHandler
+    public function getCreateHandler(): ?CreateHandler
     {
-        $data = array_values(array_filter($this->crud, function ($crud) { return $crud instanceof CreateHandler;}));
+        $data = array_values(array_filter($this->crud, function ($crud) {
+            return $crud instanceof CreateHandler;
+        }));
         if (count($data) > 0) {
             return $data[0];
         }
@@ -202,9 +239,11 @@ final class Schema
     /**
      * @return DeleteHandler|null
      */
-    public function getDeleteHandler():?DeleteHandler
+    public function getDeleteHandler(): ?DeleteHandler
     {
-        $data = array_values(array_filter($this->crud, function ($crud) { return $crud instanceof DeleteHandler;}));
+        $data = array_values(array_filter($this->crud, function ($crud) {
+            return $crud instanceof DeleteHandler;
+        }));
         if (count($data) > 0) {
             return $data[0];
         }
@@ -214,9 +253,11 @@ final class Schema
     /**
      * @return DeleteHandler|null
      */
-    public function getUpdateHandler():?UpdateHandler
+    public function getUpdateHandler(): ?UpdateHandler
     {
-        $data = array_values(array_filter($this->crud, function ($crud) { return $crud instanceof UpdateHandler;}));
+        $data = array_values(array_filter($this->crud, function ($crud) {
+            return $crud instanceof UpdateHandler;
+        }));
         if (count($data) > 0) {
             return $data[0];
         }
@@ -558,6 +599,24 @@ final class Schema
         $keyWithoutId = substr($field, 0, $l - 2);
         if (isset($haystack[$keyWithoutId]) && $haystack[$keyWithoutId] instanceof ForeignKeyField) {
             return $haystack[$keyWithoutId];
+        }
+        return null;
+    }
+
+    public function getRelatedField(string $field): ?RelatedField
+    {
+        $r = $this->getField($field);
+        if ($r instanceof RelatedField) {
+            return $r;
+        }
+        return null;
+    }
+
+    public function getPivotField(string $field): ?PivotField
+    {
+        $r = $this->getField($field);
+        if ($r instanceof PivotField) {
+            return $r;
         }
         return null;
     }
