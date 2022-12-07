@@ -13,4 +13,9 @@ class RelatedKeysField extends AbstractField
         FieldWithWhereOptionTrait,
         FieldWithOrderOptionTrait,
         FieldWithSoftTypedOptionTrait;
+
+    final public static function defineRelation(string $component, string $name, string $column = ''): self
+    {
+        return (new static($name, $column))->setComponent($component);
+    }
 }

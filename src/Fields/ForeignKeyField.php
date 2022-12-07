@@ -11,4 +11,9 @@ class ForeignKeyField extends IntegerField
     use FieldWithComponentOptionTrait,
         FieldWithWhereOptionTrait,
         FieldWithSoftTypedOptionTrait;
+
+    final public static function defineRelation(string $component, string $name, string $column = ''): self
+    {
+        return (new static($name, $column))->setComponent($component);
+    }
 }

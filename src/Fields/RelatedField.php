@@ -19,4 +19,9 @@ class RelatedField extends AbstractField
         FieldWithSingleModeOptionTrait,
         FieldWithMultipleReferencesTrait,
         FieldWithPaginationOptionTrait;
+
+    final public static function defineRelation(string $component, string $name, string $column = ''): self
+    {
+        return (new static($name, $column))->setComponent($component);
+    }
 }
