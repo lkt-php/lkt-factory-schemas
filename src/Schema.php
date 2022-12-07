@@ -576,6 +576,38 @@ final class Schema
     }
 
     /**
+     * @return AbstractField[]
+     */
+    public function getNonRelationalFields(): array
+    {
+        return array_filter($this->getAllFields(), function (AbstractField $field) {
+            if ($field instanceof ForeignKeyField
+                || $field instanceof ForeignKeysField
+                || $field instanceof PivotField
+                || $field instanceof RelatedField
+                || $field instanceof RelatedKeysField) {
+                return false;
+            }
+            return true;
+        });
+    }
+
+    /**
+     * @return AbstractField[]
+     */
+    public function getFilterableFields(): array
+    {
+        return array_filter($this->getAllFields(), function (AbstractField $field) {
+            if ($field instanceof ForeignKeyField
+                || $field instanceof PivotField
+                || $field instanceof RelatedField) {
+                return false;
+            }
+            return true;
+        });
+    }
+
+    /**
      * @param string $field
      * @return AbstractField|null
      * @throws InvalidComponentException
