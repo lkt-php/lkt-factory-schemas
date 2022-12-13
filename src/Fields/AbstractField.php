@@ -62,6 +62,14 @@ abstract class AbstractField
         return null;
     }
 
+    public function getGetterForComputed(): string
+    {
+        if ($this instanceof BooleanField) {
+            return $this->getName();
+        }
+        return 'get'. ucfirst($this->getName());
+    }
+
     public function getType(): int
     {
         $type = -1;
