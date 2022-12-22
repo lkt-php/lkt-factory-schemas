@@ -6,11 +6,8 @@ use Lkt\QueryBuilding\Where;
 
 final class FieldWhereValue
 {
-    private $value = [];
+    private array $value = [];
 
-    /**
-     * @param $value
-     */
     public function __construct($value)
     {
         if (!$value) {
@@ -26,9 +23,6 @@ final class FieldWhereValue
         $this->value = $value;
     }
 
-    /**
-     * @return array
-     */
     public function getValue(): array
     {
         return $this->value;

@@ -6,21 +6,14 @@ use Lkt\Factory\Schemas\Values\BooleanValue;
 
 trait FieldWithCompressOptionTrait
 {
-    protected $compress;
+    protected ?BooleanValue $compress = null;
 
-    /**
-     * @param bool $compress
-     * @return $this
-     */
-    final public function setIsCompressed(bool $compress = true): self
+    final public function setIsCompressed(bool $compress = true): static
     {
         $this->compress = new BooleanValue($compress);
         return $this;
     }
 
-    /**
-     * @return bool
-     */
     final public function isCompressed(): bool
     {
         if ($this->compress instanceof BooleanValue) {

@@ -11,22 +11,14 @@ class JSONField extends AbstractField
     use FieldWithCompressOptionTrait,
         FieldWithNullOptionTrait;
 
-    protected $assoc;
+    protected ?BooleanValue $assoc = null;
 
-    /**
-     * @param bool $assoc
-     * @return $this
-     */
-    public function setIsAssoc(bool $assoc = true): self
+    public function setIsAssoc(bool $assoc = true): static
     {
         $this->assoc = new BooleanValue($assoc);
         return $this;
     }
 
-    /**
-     * @param bool $assoc
-     * @return bool
-     */
     public function isAssoc(bool $assoc = true): bool
     {
         if ($this->assoc instanceof BooleanValue) {

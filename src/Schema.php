@@ -2,7 +2,6 @@
 
 namespace Lkt\Factory\Schemas;
 
-use Lkt\ColumnTypes\Enums\ColumnType;
 use Lkt\Factory\Schemas\CRUDs\AbstractCRUD;
 use Lkt\Factory\Schemas\CRUDs\CreateHandler;
 use Lkt\Factory\Schemas\CRUDs\DeleteHandler;
@@ -11,27 +10,14 @@ use Lkt\Factory\Schemas\Exceptions\InvalidComponentException;
 use Lkt\Factory\Schemas\Exceptions\InvalidTableException;
 use Lkt\Factory\Schemas\Exceptions\SchemaNotDefinedException;
 use Lkt\Factory\Schemas\Fields\AbstractField;
-use Lkt\Factory\Schemas\Fields\BooleanField;
-use Lkt\Factory\Schemas\Fields\ColorField;
-use Lkt\Factory\Schemas\Fields\DateTimeField;
-use Lkt\Factory\Schemas\Fields\EmailField;
-use Lkt\Factory\Schemas\Fields\FileField;
-use Lkt\Factory\Schemas\Fields\FloatField;
 use Lkt\Factory\Schemas\Fields\ForeignKeyField;
 use Lkt\Factory\Schemas\Fields\ForeignKeysField;
-use Lkt\Factory\Schemas\Fields\HTMLField;
 use Lkt\Factory\Schemas\Fields\IdField;
-use Lkt\Factory\Schemas\Fields\ImageField;
-use Lkt\Factory\Schemas\Fields\IntegerField;
-use Lkt\Factory\Schemas\Fields\JSONField;
 use Lkt\Factory\Schemas\Fields\PivotField;
 use Lkt\Factory\Schemas\Fields\PivotLeftIdField;
-use Lkt\Factory\Schemas\Fields\PivotPositionField;
 use Lkt\Factory\Schemas\Fields\PivotRightIdField;
 use Lkt\Factory\Schemas\Fields\RelatedField;
 use Lkt\Factory\Schemas\Fields\RelatedKeysField;
-use Lkt\Factory\Schemas\Fields\StringField;
-use Lkt\Factory\Schemas\Fields\UnixTimeStampField;
 use Lkt\Factory\Schemas\Values\ComponentValue;
 use Lkt\Factory\Schemas\Values\TableValue;
 use function Lkt\Tools\Arrays\getArrayFirstPosition;
@@ -39,7 +25,7 @@ use function Lkt\Tools\Arrays\getArrayFirstPosition;
 final class Schema
 {
     /** @var Schema[] */
-    private static $stack = [];
+    private static array $stack = [];
 
     /**
      * @return Schema[]
@@ -49,9 +35,6 @@ final class Schema
         return self::$stack;
     }
 
-    /**
-     * @return int
-     */
     public static function getCount(): int
     {
         return count(self::$stack);
@@ -68,8 +51,6 @@ final class Schema
     }
 
     /**
-     * @param string $code
-     * @return static
      * @throws SchemaNotDefinedException
      */
     public static function get(string $code): self
@@ -80,20 +61,14 @@ final class Schema
         return self::$stack[$code];
     }
 
-    /**
-     * @param string $code
-     * @return bool
-     */
     public static function exists(string $code): bool
     {
         return self::$stack[$code] instanceof Schema;
     }
 
-    /** @var TableValue */
-    protected $table;
+    protected ?TableValue $table = null;
 
-    /** @var ComponentValue */
-    protected $component;
+    protected ?ComponentValue $component = null;
 
     protected $databaseConnector = '';
 
@@ -297,235 +272,6 @@ final class Schema
             'base' => $this->instanceSettings->hasBaseComponent() ? $this->instanceSettings->getBaseComponent() : '',
             'fields' => $this->fields,
         ];
-    }
-
-    /**
-     * @param array $data
-     * @param string $component
-     * @return static
-     * @throws Exceptions\InvalidFieldFilePathException
-     * @throws Exceptions\InvalidFieldNameException
-     * @throws Exceptions\InvalidSchemaAppClassException
-     * @throws Exceptions\InvalidSchemaClassNameForGeneratedClassException
-     * @throws Exceptions\InvalidSchemaNamespaceForGeneratedClassException
-     * @throws InvalidComponentException
-     * @throws InvalidTableException
-     */
-    public static function fromArray(array $data, string $component): self
-    {
-        if (!isset($data['pivot']) || !$data['pivot']) {
-            $ins = self::table($data['table'], $component);
-        } else {
-            $ins = self::pivotTable($data['table'], $component);
-        }
-
-        $instanceCfg = isset($data['instance']) ? $data['instance'] : [];
-        $class = isset($instanceCfg['class']) ? trim($instanceCfg['class']) : '';
-        $namespace = isset($instanceCfg['namespace']) ? trim($instanceCfg['namespace']) : '';
-        $classname = isset($instanceCfg['classname']) ? trim($instanceCfg['classname']) : '';
-        $storePath = isset($instanceCfg['storePath']) ? trim($instanceCfg['storePath']) : '';
-        $extends = isset($instanceCfg['extends']) ? trim($instanceCfg['extends']) : '';
-        $base = isset($data['base']) ? trim($data['base']) : '';
-
-        $instanceSettings = InstanceSettings::define($class)
-            ->setNamespaceForGeneratedClass($namespace)
-            ->setClassNameForGeneratedClass($classname)
-            ->setWhereStoreGeneratedClass($storePath)
-            ->setClassToBeExtended($extends);
-
-        if ($base !== '') {
-            $instanceSettings->setBaseComponent($base);
-        }
-
-        $implements = '';
-        if (isset($data['instance']) && isset($data['instance']['implements'])) {
-            $implements = trim($data['instance']['implements']);
-        }
-        if ($implements !== '') {
-            $instanceSettings->setInterface($implements);
-        }
-
-        if (isset($data['instance']['traits'])) {
-            if (is_array($data['instance']['traits'])) {
-                foreach ($data['instance']['traits'] as $trait) {
-                    $instanceSettings->setTrait(trim($trait));
-                }
-            } elseif (is_string($data['instance']['traits'])) {
-                $instanceSettings->setTrait(trim($data['instance']['traits']));
-            }
-        }
-
-        $ins->setInstanceSettings($instanceSettings);
-
-        if (!isset($data['pivot']) || !$data['pivot']) {
-
-            $idColumn = is_array($data['idColumn']) ? trim($data['idColumn'][0]) : trim($data['idColumn']);
-
-            foreach ($data['fields'] as $field => $fieldConfig) {
-
-                $where = isset($fieldConfig['where']) ? $fieldConfig['where'] : [];
-                if (!$where) {
-                    $where = [];
-                }
-
-                $order = isset($fieldConfig['order']) ? $fieldConfig['order'] : [];
-                if (!$order) {
-                    $order = [];
-                }
-
-                $compress = false;
-                if (isset($fieldConfig['compress']) && $fieldConfig['compress'] === true) {
-                    $compress = true;
-                }
-
-                $softTyped = false;
-                if (isset($fieldConfig['softTyped']) && $fieldConfig['softTyped'] === true) {
-                    $softTyped = true;
-                }
-
-                $assoc = false;
-                if (isset($fieldConfig['assoc']) && $fieldConfig['assoc'] === true) {
-                    $assoc = true;
-                }
-
-                if ($field === $idColumn) {
-                    $ins->addField(IdField::define($field, trim($fieldConfig['column'])));
-                    continue;
-                }
-
-                switch ($fieldConfig['type']) {
-                    case ColumnType::String:
-                        $ins->addField(StringField::define($field, trim($fieldConfig['column'])));
-                        break;
-
-                    case ColumnType::Email:
-                        $ins->addField(EmailField::define($field, trim($fieldConfig['column'])));
-                        break;
-
-                    case ColumnType::HTML:
-                        $ins->addField(HTMLField::define($field, trim($fieldConfig['column'])));
-                        break;
-
-                    case ColumnType::Boolean:
-                        $ins->addField(BooleanField::define($field, trim($fieldConfig['column'])));
-                        break;
-
-                    case ColumnType::Integer:
-                        $ins->addField(IntegerField::define($field, trim($fieldConfig['column'])));
-                        break;
-
-                    case ColumnType::Datetime:
-                        $ins->addField(DateTimeField::define($field, trim($fieldConfig['column'])));
-                        break;
-
-                    case ColumnType::UnixTimeStamp:
-                        $ins->addField(UnixTimeStampField::define($field, trim($fieldConfig['column'])));
-                        break;
-
-                    case ColumnType::Float:
-                        $ins->addField(FloatField::define($field, trim($fieldConfig['column'])));
-                        break;
-
-                    case ColumnType::ForeignKeys:
-                        $ins->addField(
-                            ForeignKeysField::define($field, trim($fieldConfig['column']))
-                                ->setComponent($fieldConfig['component'])
-                                ->setWhere($where)
-                                ->setOrder($order)
-                                ->setIsSoftTyped($softTyped)
-                        );
-                        break;
-
-                    case ColumnType::ForeignKey:
-                        $ins->addField(
-                            ForeignKeyField::define($field, trim($fieldConfig['column']))
-                                ->setComponent($fieldConfig['component'])
-                                ->setWhere($where)
-                                ->setIsSoftTyped($softTyped)
-                        );
-                        break;
-
-                    case ColumnType::File:
-                        $ins->addField(
-                            FileField::define($field, trim($fieldConfig['column']))
-                                ->setStorePath(trim($fieldConfig['storePath']))
-                                ->setPublicPath(trim($fieldConfig['public']))
-                        );
-                        break;
-
-                    case ColumnType::Image:
-                        $ins->addField(
-                            ImageField::define($field, trim($fieldConfig['column']))
-                                ->setStorePath(trim($fieldConfig['storePath']))
-                                ->setPublicPath(trim($fieldConfig['public']))
-                        );
-                        break;
-
-                    case ColumnType::Related:
-                        $ins->addField(
-                            RelatedField::define($field, trim($fieldConfig['column']))
-                                ->setComponent($fieldConfig['component'])
-                                ->setWhere($where)
-                                ->setOrder($order)
-                                ->setIsSoftTyped($softTyped)
-                        );
-                        break;
-
-                    case ColumnType::RelatedKeys:
-                        $ins->addField(
-                            RelatedKeysField::define($field, trim($fieldConfig['column']))
-                                ->setComponent($fieldConfig['component'])
-                                ->setWhere($where)
-                                ->setOrder($order)
-                                ->setIsSoftTyped($softTyped)
-                        );
-                        break;
-
-                    case ColumnType::Pivot:
-                        $ins->addField(
-                            PivotField::define($field, trim($fieldConfig['column']))
-                                ->setComponent($fieldConfig['component'])
-                                ->setPivotComponent(trim($fieldConfig['pivot']))
-                                ->setWhere($where)
-                                ->setOrder($order)
-                        );
-                        break;
-
-                    case ColumnType::Color:
-                        $ins->addField(ColorField::define($field, trim($fieldConfig['column'])));
-                        break;
-
-                    case ColumnType::JSON:
-                        $ins->addField(
-                            JSONField::define($field, trim($fieldConfig['column']))
-                                ->setIsAssoc($assoc)
-                                ->setIsCompressed($compress)
-                        );
-                        break;
-                }
-            }
-        } else {
-            $leftField = $data['idColumn'][0];
-            $leftFieldCnf = $data['fields'][$leftField];
-            $ins->addField(
-                PivotLeftIdField::define(trim($leftField), trim($leftFieldCnf['column']))->setComponent(trim($leftFieldCnf['component']))
-            );
-
-            $rightField = $data['idColumn'][1];
-            $rightFieldCnf = $data['fields'][$rightField];
-            $ins->addField(
-                PivotRightIdField::define(trim($rightField), trim($rightFieldCnf['column']))->setComponent(trim($rightFieldCnf['component']))
-            );
-
-            $keys = array_keys($data['fields']);
-            $positionField = $keys[2];
-            $positionFieldCnf = $data['fields'][$positionField];
-            $ins->addField(
-                PivotPositionField::define(trim($positionField), trim($positionFieldCnf['column']))
-            );
-        }
-
-        return $ins;
     }
 
     /**

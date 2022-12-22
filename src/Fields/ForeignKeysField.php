@@ -18,7 +18,7 @@ class ForeignKeysField extends AbstractField
         FieldWithAllowAnonymousOptionTrait,
         FieldWithNullOptionTrait;
 
-    final public static function defineRelation(string $component, string $name, string $column = ''): self
+    final public static function defineRelation(string $component, string $name, string $column = ''): static
     {
         return (new static($name, $column))->setComponent($component);
     }

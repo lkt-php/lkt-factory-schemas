@@ -4,7 +4,7 @@ namespace Lkt\Factory\Schemas\Traits;
 
 trait FieldWithMultipleReferencesTrait
 {
-    protected $multipleReferences = [];
+    protected array $multipleReferences = [];
 
     public static function defineWithMultipleReferences(string $name, array $columns = []): self
     {
@@ -17,17 +17,11 @@ trait FieldWithMultipleReferencesTrait
         return $this;
     }
 
-    /**
-     * @return array
-     */
     public function getMultipleReferences(): array
     {
         return $this->multipleReferences;
     }
 
-    /**
-     * @return bool
-     */
     public function hasMultipleReferences(): bool
     {
         return count($this->multipleReferences) > 0;

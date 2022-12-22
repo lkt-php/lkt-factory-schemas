@@ -4,7 +4,7 @@ namespace Lkt\Factory\Schemas\Values;
 
 final class FieldOrderValue
 {
-    private $value = [];
+    private array $value = [];
 
     /**
      * @param $value
@@ -21,9 +21,6 @@ final class FieldOrderValue
         $this->value = $value;
     }
 
-    /**
-     * @return array
-     */
     public function getValue(): array
     {
         return $this->value;

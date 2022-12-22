@@ -10,24 +10,19 @@ class FileField extends AbstractField
 {
     use FieldWithNullOptionTrait;
 
-    protected $storePath;
-    protected $publicPath;
+    protected ?FieldFilePathValue $storePath = null;
+    protected ?FieldFilePathValue $publicPath = null;
 
 
     /**
-     * @param $path
-     * @return $this
      * @throws InvalidFieldFilePathException
      */
-    final public function setStorePath($path): self
+    final public function setStorePath(string $path): self
     {
         $this->storePath = new FieldFilePathValue($path);
         return $this;
     }
 
-    /**
-     * @return string
-     */
     final public function getStorePath(): string
     {
         if ($this->storePath instanceof FieldFilePathValue) {
@@ -38,19 +33,14 @@ class FileField extends AbstractField
 
 
     /**
-     * @param $path
-     * @return $this
      * @throws InvalidFieldFilePathException
      */
-    final public function setPublicPath($path): self
+    final public function setPublicPath(string $path): self
     {
         $this->publicPath = new FieldFilePathValue($path);
         return $this;
     }
 
-    /**
-     * @return string
-     */
     final public function getPublicPath(): string
     {
         if ($this->publicPath instanceof FieldFilePathValue) {

@@ -4,11 +4,8 @@ namespace Lkt\Factory\Schemas\Values;
 
 final class BooleanValue
 {
-    private $value = false;
+    private bool $value = false;
 
-    /**
-     * @param bool $value
-     */
     public function __construct(bool $value)
     {
         if (!$value) {
@@ -17,9 +14,6 @@ final class BooleanValue
         $this->value = $value === true;
     }
 
-    /**
-     * @return bool
-     */
     public function getValue(): bool
     {
         return $this->value;

@@ -6,10 +6,9 @@ use Lkt\Factory\Schemas\Values\BooleanValue;
 
 trait FieldWithAllowAnonymousOptionTrait
 {
-    protected $allowAnonymous;
+    protected ?BooleanValue $allowAnonymous = null;
 
     /**
-     * @param bool $allow
      * @return FieldWithAllowAnonymousOptionTrait
      */
     final public function setAllowAnonymous(bool $allow = true): self

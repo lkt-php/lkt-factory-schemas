@@ -6,21 +6,17 @@ use Lkt\Factory\Schemas\Values\FieldOrderValue;
 
 trait FieldWithOrderOptionTrait
 {
-    protected $order;
+    protected ?FieldOrderValue $order = null;
 
     /**
-     * @param $order
      * @return FieldWithOrderOptionTrait
      */
-    final public function setOrder($order): self
+    final public function setOrder($order): static
     {
         $this->order = new FieldOrderValue($order);
         return $this;
     }
 
-    /**
-     * @return array
-     */
     final public function getOrder(): array
     {
         if ($this->order instanceof FieldOrderValue) {

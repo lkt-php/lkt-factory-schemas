@@ -7,22 +7,19 @@ use Lkt\Factory\Schemas\Values\ComponentValue;
 
 trait FieldWithComponentOptionTrait
 {
-    protected $component;
+    protected ?ComponentValue $component = null;
 
     /**
      * @param string $component
-     * @return \Lkt\Factory\Schemas\Fields\RelatedKeysField|\Lkt\Factory\Schemas\Fields\ForeignKeyField|\Lkt\Factory\Schemas\Fields\ForeignKeysField|\Lkt\Factory\Schemas\Fields\PivotField|\Lkt\Factory\Schemas\Fields\RelatedField|FieldWithComponentOptionTrait
+     * @return $this
      * @throws InvalidComponentException
      */
-    final public function setComponent(string $component = ''): self
+    final public function setComponent(string $component = ''): static
     {
         $this->component = new ComponentValue($component);
         return $this;
     }
 
-    /**
-     * @return string
-     */
     final public function getComponent(): string
     {
         if ($this->component instanceof ComponentValue) {

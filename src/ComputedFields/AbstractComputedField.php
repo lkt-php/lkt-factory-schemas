@@ -7,15 +7,15 @@ use Lkt\Factory\Schemas\Fields\AbstractField;
 abstract class AbstractComputedField extends AbstractField
 {
     protected $value;
-    protected $field;
+    protected string $field;
 
-    protected function setField(string $value)
+    protected function setField(string $value): static
     {
         $this->field = $value;
         return $this;
     }
 
-    protected function setValue($value = null)
+    protected function setValue($value = null): static
     {
         $this->value = $value;
         return $this;

@@ -14,56 +14,40 @@ use Lkt\Factory\Schemas\Values\StringValue;
 
 final class InstanceSettings
 {
-    private $appClass;
-    private $namespaceForGeneratedClass;
-    private $classForGeneratedClass;
-    private $whereStoreGeneratedClass;
-    private $classToBeExtended;
-    private $baseComponent;
-    private $queryCallerClassName;
-    private $whereClassName;
-    protected $implementsInterfaces = [];
-    protected $traits = [];
+    private ?SchemaAppClassValue $appClass = null;
+    private ?SchemaNamespaceForGeneratedClassValue $namespaceForGeneratedClass = null;
+    private ?SchemaClassForGeneratedClassValue $classForGeneratedClass = null;
+    private ?StringValue $whereStoreGeneratedClass = null;
+    private ?StringValue $classToBeExtended = null;
+    private ?ComponentValue $baseComponent = null;
+    private ?StringValue $queryCallerClassName = null;
+    private ?StringValue $whereClassName = null;
+    protected array $implementsInterfaces = [];
+    protected array $traits = [];
 
-    /**
-     * @param string $interface
-     * @return $this
-     */
+
     public function setInterface(string $interface): self
     {
         $this->implementsInterfaces[] = $interface;
         return $this;
     }
 
-    /**
-     * @param string $trait
-     * @return $this
-     */
     public function setTrait(string $trait): self
     {
         $this->traits[] = $trait;
         return $this;
     }
 
-    /**
-     * @return array
-     */
     public function getImplementedInterfaces(): array
     {
         return $this->implementsInterfaces;
     }
 
-    /**
-     * @return array
-     */
     public function getUsedTraits(): array
     {
         return $this->traits;
     }
 
-    /**
-     * @return string
-     */
     public function getImplementedInterfacesAsString(): string
     {
         if ($this->hasImplementedInterfaces()) {
@@ -72,9 +56,6 @@ final class InstanceSettings
         return '';
     }
 
-    /**
-     * @return string
-     */
     public function getUsedTraitsAsString(): string
     {
         if ($this->hasUsedTraits()) {
@@ -83,17 +64,11 @@ final class InstanceSettings
         return '';
     }
 
-    /**
-     * @return bool
-     */
     public function hasImplementedInterfaces(): bool
     {
         return count($this->implementsInterfaces) > 0;
     }
 
-    /**
-     * @return bool
-     */
     public function hasUsedTraits(): bool
     {
         return count($this->traits) > 0;
@@ -108,7 +83,6 @@ final class InstanceSettings
     }
 
     /**
-     * @return string
      * @throws InvalidSchemaAppClassException
      */
     public function getAppClass(): string
@@ -271,9 +245,6 @@ final class InstanceSettings
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getClassToBeExtended(): string
     {
         if ($this->classToBeExtended instanceof StringValue) {

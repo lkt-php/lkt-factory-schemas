@@ -6,7 +6,7 @@ use Lkt\Factory\Schemas\Exceptions\InvalidSchemaAppClassException;
 
 final class SchemaAppClassValue
 {
-    private $value;
+    private string $value;
 
     /**
      * @param string $value
@@ -25,9 +25,6 @@ final class SchemaAppClassValue
         $this->value = $value;
     }
 
-    /**
-     * @return string
-     */
     public function getValue(): string
     {
         return $this->value;

@@ -6,21 +6,18 @@ use Lkt\Factory\Schemas\Values\FieldWhereValue;
 
 trait FieldWithWhereOptionTrait
 {
-    protected $where;
+    protected ?FieldWhereValue $where = null;
 
     /**
      * @param $where
-     * @return FieldWithWhereOptionTrait
+     * @return $this
      */
-    final public function setWhere($where): self
+    final public function setWhere($where): static
     {
         $this->where = new FieldWhereValue($where);
         return $this;
     }
 
-    /**
-     * @return array
-     */
     final public function getWhere(): array
     {
         if ($this->where instanceof FieldWhereValue) {

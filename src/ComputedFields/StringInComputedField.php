@@ -6,7 +6,7 @@ use Lkt\Factory\Schemas\Fields\AbstractField;
 
 class StringInComputedField extends AbstractComputedField
 {
-    final public static function compute(string $name, string $field, array $value = []): self
+    final public static function compute(string $name, string $field, array $value = []): static
     {
         $r = new static($name);
         $r->setField($field)->setValue($value);

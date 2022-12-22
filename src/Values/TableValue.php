@@ -6,7 +6,7 @@ use Lkt\Factory\Schemas\Exceptions\InvalidTableException;
 
 final class TableValue
 {
-    private $value;
+    private string $value;
 
     /**
      * @param string $value
@@ -20,9 +20,6 @@ final class TableValue
         $this->value = $value;
     }
 
-    /**
-     * @return string
-     */
     public function getValue(): string
     {
         return $this->value;

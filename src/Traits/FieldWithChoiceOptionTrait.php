@@ -4,7 +4,7 @@ namespace Lkt\Factory\Schemas\Traits;
 
 trait FieldWithChoiceOptionTrait
 {
-    protected $allowedOptions;
+    protected array $allowedOptions = [];
 
     final public function setAllowedOptions(array $options): self
     {

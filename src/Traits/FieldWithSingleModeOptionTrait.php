@@ -6,21 +6,17 @@ use Lkt\Factory\Schemas\Values\BooleanValue;
 
 trait FieldWithSingleModeOptionTrait
 {
-    protected $singleMode;
+    protected ?BooleanValue $singleMode = null;
 
     /**
-     * @param bool $isSingleMode
      * @return FieldWithSingleModeOptionTrait
      */
-    final public function setSingleMode(bool $isSingleMode = true): self
+    final public function setSingleMode(bool $isSingleMode = true): static
     {
         $this->singleMode = new BooleanValue($isSingleMode);
         return $this;
     }
 
-    /**
-     * @return bool
-     */
     final public function isSingleMode(): bool
     {
         if ($this->singleMode instanceof BooleanValue) {

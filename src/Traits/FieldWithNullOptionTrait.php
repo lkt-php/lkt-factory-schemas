@@ -6,7 +6,7 @@ use Lkt\Factory\Schemas\Values\BooleanValue;
 
 trait FieldWithNullOptionTrait
 {
-    protected $allowNull;
+    protected ?BooleanValue $allowNull = null;
 
     final public function setNullable(bool $allow = true): self
     {

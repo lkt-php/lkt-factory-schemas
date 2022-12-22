@@ -6,7 +6,7 @@ use Lkt\Factory\Schemas\Exceptions\InvalidFieldFilePathException;
 
 final class FieldFilePathValue
 {
-    private $value;
+    private string $value;
 
     /**
      * @param string $value
@@ -21,9 +21,6 @@ final class FieldFilePathValue
         $this->value = $value;
     }
 
-    /**
-     * @return string
-     */
     public function getValue(): string
     {
         return $this->value;

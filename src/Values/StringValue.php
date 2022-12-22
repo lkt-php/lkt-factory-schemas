@@ -4,7 +4,7 @@ namespace Lkt\Factory\Schemas\Values;
 
 final class StringValue
 {
-    private $value;
+    private string $value;
 
     /**
      * @param string $value
@@ -17,9 +17,6 @@ final class StringValue
         $this->value = $value;
     }
 
-    /**
-     * @return string
-     */
     public function getValue(): string
     {
         return $this->value;

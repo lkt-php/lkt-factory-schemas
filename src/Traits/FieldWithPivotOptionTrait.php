@@ -7,22 +7,17 @@ use Lkt\Factory\Schemas\Values\ComponentValue;
 
 trait FieldWithPivotOptionTrait
 {
-    protected $pivotComponent;
+    protected ?ComponentValue $pivotComponent = null;
 
     /**
-     * @param string $component
-     * @return FieldWithPivotOptionTrait|\Lkt\Factory\Schemas\Fields\PivotField
      * @throws InvalidComponentException
      */
-    final public function setPivotComponent(string $component = ''): self
+    final public function setPivotComponent(string $component = ''): static
     {
         $this->pivotComponent = new ComponentValue($component);
         return $this;
     }
 
-    /**
-     * @return string
-     */
     final public function getPivotComponent(): string
     {
         if ($this->pivotComponent instanceof ComponentValue) {

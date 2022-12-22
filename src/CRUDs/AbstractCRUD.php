@@ -4,7 +4,7 @@ namespace Lkt\Factory\Schemas\CRUDs;
 
 abstract class AbstractCRUD
 {
-    protected $className = '';
+    protected string $className = '';
 
     public function __construct(string $className)
     {
