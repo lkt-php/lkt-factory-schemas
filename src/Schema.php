@@ -2,6 +2,7 @@
 
 namespace Lkt\Factory\Schemas;
 
+use Lkt\Factory\Schemas\ComputedFields\AbstractComputedField;
 use Lkt\Factory\Schemas\CRUDs\AbstractCRUD;
 use Lkt\Factory\Schemas\CRUDs\CreateHandler;
 use Lkt\Factory\Schemas\CRUDs\DeleteHandler;
@@ -18,6 +19,7 @@ use Lkt\Factory\Schemas\Fields\PivotLeftIdField;
 use Lkt\Factory\Schemas\Fields\PivotRightIdField;
 use Lkt\Factory\Schemas\Fields\RelatedField;
 use Lkt\Factory\Schemas\Fields\RelatedKeysField;
+use Lkt\Factory\Schemas\Fields\RelatedKeysMergeField;
 use Lkt\Factory\Schemas\Values\ComponentValue;
 use Lkt\Factory\Schemas\Values\TableValue;
 use function Lkt\Tools\Arrays\getArrayFirstPosition;
@@ -75,6 +77,7 @@ final class Schema
     /** @var AbstractField[] */
     protected $idFields = [];
     protected $idColumns = [];
+    protected $idColumnsInTable = [];
 
     /** @var AbstractField[] */
     protected $fields = [];
@@ -331,7 +334,42 @@ final class Schema
                 || $field instanceof ForeignKeysField
                 || $field instanceof PivotField
                 || $field instanceof RelatedField
-                || $field instanceof RelatedKeysField) {
+                || $field instanceof RelatedKeysField
+                || $field instanceof RelatedKeysMergeField) {
+                return false;
+            }
+            return true;
+        });
+    }
+
+    /**
+     * @return AbstractField[]
+     */
+    public function getRelationalFields(): array
+    {
+        return array_filter($this->getAllFields(), function (AbstractField $field) {
+            if ($field instanceof ForeignKeyField
+                || $field instanceof ForeignKeysField
+                || $field instanceof PivotField
+                || $field instanceof RelatedField
+                || $field instanceof RelatedKeysField
+                || $field instanceof RelatedKeysMergeField) {
+                return true;
+            }
+            return false;
+        });
+    }
+
+    /**
+     * @return AbstractField[]
+     */
+    public function getSameTableFields(): array
+    {
+        return array_filter($this->getAllFields(), function (AbstractField $field) {
+            if ($field instanceof PivotField
+                || $field instanceof RelatedField
+                || $field instanceof RelatedKeysMergeField
+                || $field instanceof AbstractComputedField) {
                 return false;
             }
             return true;
@@ -390,6 +428,35 @@ final class Schema
         return null;
     }
 
+    public function getForeignKeyField(string $field): ?ForeignKeyField
+    {
+        $r = $this->getField($field);
+        if ($r instanceof ForeignKeyField) {
+            return $r;
+        }
+        return null;
+    }
+
+    public function getForeignKeysField(string $field): ?ForeignKeysField
+    {
+        $r = $this->getField($field);
+        if ($r instanceof ForeignKeysField) {
+            return $r;
+        }
+        return null;
+    }
+
+    public function getForeignKeysFieldPointingToComponent(string $component): ?ForeignKeysField
+    {
+        $results = $this->getFieldsPointingToComponent($component);
+        foreach ($results as $result) {
+            if ($result instanceof ForeignKeysField) {
+                return $result;
+            }
+        }
+        return null;
+    }
+
     public function getPivotField(string $field): ?PivotField
     {
         $r = $this->getField($field);
@@ -420,6 +487,7 @@ final class Schema
 
             $this->idColumns = array_keys($fields);
             $this->idFields = array_values($fields);
+            $this->idColumnsInTable = array_map(function($field) { return $field->getColumn();}, $fields);
             return $this->idFields;
         }
 
@@ -429,6 +497,7 @@ final class Schema
 
         $this->idColumns = array_keys($fields);
         $this->idFields = array_values($fields);
+        $this->idColumnsInTable = array_map(function($field) { return $field->getColumn();}, $fields);
         return $this->idFields;
     }
 
@@ -440,6 +509,16 @@ final class Schema
     {
         $this->getIdentifiers();
         return implode('-', $this->idColumns);
+    }
+
+    /**
+     * @return string
+     * @throws InvalidComponentException
+     */
+    public function getIdInTableString()
+    {
+        $this->getIdentifiers();
+        return implode('-', $this->idColumnsInTable);
     }
 
     /**
@@ -468,7 +547,7 @@ final class Schema
     public function getFieldsPointingToComponent(string $component): array
     {
         /** @var AbstractField[] $fields */
-        $fields = $this->getAllFields();
+        $fields = $this->getRelationalFields();
         return array_filter($fields, function ($field) use ($component) {
             if ($field instanceof ForeignKeyField
                 || $field instanceof ForeignKeysField

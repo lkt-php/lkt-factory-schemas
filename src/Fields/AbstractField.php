@@ -34,7 +34,7 @@ abstract class AbstractField
     /**
      * @throws InvalidFieldNameException
      */
-    final public static function define(string $name, string $column = ''): self
+    final public static function define(string $name, string $column = ''): static
     {
         return new static($name, $column);
     }
