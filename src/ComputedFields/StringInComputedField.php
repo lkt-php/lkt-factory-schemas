@@ -2,8 +2,6 @@
 
 namespace Lkt\Factory\Schemas\ComputedFields;
 
-use Lkt\Factory\Schemas\Fields\AbstractField;
-
 class StringInComputedField extends AbstractComputedField
 {
     final public static function compute(string $name, string $field, array $value = []): static
