@@ -287,6 +287,14 @@ final class Schema
 
     /**
      * @return AbstractField[]
+     */
+    public function getFields(): array
+    {
+        return $this->fields;
+    }
+
+    /**
+     * @return AbstractField[]
      * @throws InvalidComponentException
      * @throws SchemaNotDefinedException
      */
@@ -311,12 +319,10 @@ final class Schema
 
             if ($this->instanceSettings->hasBaseComponent()) {
                 $baseSchema = Schema::get($this->instanceSettings->getBaseComponent());
-                if ($baseSchema) {
-                    $fields = $baseSchema->getAllFields();
-                    foreach ($fields as $column => $field) {
-                        if (!array_key_exists($column, $r)) {
-                            $r[$column] = $field;
-                        }
+                $fields = $baseSchema->getAllFields();
+                foreach ($fields as $column => $field) {
+                    if (!array_key_exists($column, $r)) {
+                        $r[$column] = $field;
                     }
                 }
             }
@@ -487,7 +493,9 @@ final class Schema
 
             $this->idColumns = array_keys($fields);
             $this->idFields = array_values($fields);
-            $this->idColumnsInTable = array_map(function($field) { return $field->getColumn();}, $fields);
+            $this->idColumnsInTable = array_map(function ($field) {
+                return $field->getColumn();
+            }, $fields);
             return $this->idFields;
         }
 
@@ -497,7 +505,9 @@ final class Schema
 
         $this->idColumns = array_keys($fields);
         $this->idFields = array_values($fields);
-        $this->idColumnsInTable = array_map(function($field) { return $field->getColumn();}, $fields);
+        $this->idColumnsInTable = array_map(function ($field) {
+            return $field->getColumn();
+        }, $fields);
         return $this->idFields;
     }
 
