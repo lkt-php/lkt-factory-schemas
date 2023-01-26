@@ -7,7 +7,7 @@ use Lkt\Factory\Schemas\Fields\AbstractField;
 abstract class AbstractComputedField extends AbstractField
 {
     protected $value;
-    protected string $field;
+    protected string $field = '';
 
     protected function setField(string $value): static
     {

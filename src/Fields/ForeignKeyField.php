@@ -12,7 +12,7 @@ class ForeignKeyField extends IntegerField
         FieldWithWhereOptionTrait,
         FieldWithSoftTypedOptionTrait;
 
-    final public static function defineRelation(string $component, string $name, string $column = ''): static
+    public static function defineRelation(string $component, string $name, string $column = ''): static
     {
         return (new static($name, $column))->setComponent($component);
     }
