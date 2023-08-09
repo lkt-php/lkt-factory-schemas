@@ -2,6 +2,7 @@
 
 namespace Lkt\Factory\Schemas\Fields;
 
+use Lkt\Factory\Schemas\Schema;
 use Lkt\Factory\Schemas\Traits\FieldWithNullOptionTrait;
 
 class ConcatField extends AbstractField
@@ -25,11 +26,12 @@ class ConcatField extends AbstractField
         return $this->fields;
     }
 
-    public function getConcatenatedFieldsAsString(): string
+    public function getConcatenatedFieldsAsString(Schema $schema): string
     {
         $r = [];
         foreach ($this->fields as $field) {
-            $r[] = "'{$field}'";
+            $f = $schema->getField($field);
+            $r[] = "'{$f->getColumn()}'";
         }
         $r = implode(',', $r);
         return "[{$r}]";
