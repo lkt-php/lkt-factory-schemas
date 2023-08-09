@@ -11,15 +11,19 @@ use Lkt\Factory\Schemas\Exceptions\InvalidComponentException;
 use Lkt\Factory\Schemas\Exceptions\InvalidTableException;
 use Lkt\Factory\Schemas\Exceptions\SchemaNotDefinedException;
 use Lkt\Factory\Schemas\Fields\AbstractField;
+use Lkt\Factory\Schemas\Fields\BooleanField;
+use Lkt\Factory\Schemas\Fields\ColorField;
 use Lkt\Factory\Schemas\Fields\ForeignKeyField;
 use Lkt\Factory\Schemas\Fields\ForeignKeysField;
 use Lkt\Factory\Schemas\Fields\IdField;
+use Lkt\Factory\Schemas\Fields\IntegerField;
 use Lkt\Factory\Schemas\Fields\PivotField;
 use Lkt\Factory\Schemas\Fields\PivotLeftIdField;
 use Lkt\Factory\Schemas\Fields\PivotRightIdField;
 use Lkt\Factory\Schemas\Fields\RelatedField;
 use Lkt\Factory\Schemas\Fields\RelatedKeysField;
 use Lkt\Factory\Schemas\Fields\RelatedKeysMergeField;
+use Lkt\Factory\Schemas\Fields\StringField;
 use Lkt\Factory\Schemas\Values\ComponentValue;
 use Lkt\Factory\Schemas\Values\TableValue;
 use function Lkt\Tools\Arrays\getArrayFirstPosition;
@@ -640,5 +644,30 @@ final class Schema
     public function getDatabaseConnector(): string
     {
         return $this->databaseConnector;
+    }
+
+    final public function setIdField(string $name, string $column = ''): self
+    {
+        return $this->addField(IdField::define($name, $column));
+    }
+
+    final public function addIntegerField(string $name, string $column = '', bool $nullable = false): self
+    {
+        return $this->addField(IntegerField::define($name, $column)->setNullable($nullable));
+    }
+
+    final public function addStringField(string $name, string $column = '', bool $nullable = false): self
+    {
+        return $this->addField(StringField::define($name, $column)->setNullable($nullable));
+    }
+
+    final public function addBooleanField(string $name, string $column = '', bool $nullable = false): self
+    {
+        return $this->addField(BooleanField::define($name, $column)->setNullable($nullable));
+    }
+
+    final public function addColorField(string $name, string $column = '', bool $nullable = false): self
+    {
+        return $this->addField(ColorField::define($name, $column)->setNullable($nullable));
     }
 }
