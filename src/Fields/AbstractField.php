@@ -58,4 +58,11 @@ abstract class AbstractField
         }
         return 'get'. ucfirst($this->getName());
     }
+
+    public function getGetterForPrimitiveValue(): string
+    {
+        if ($this instanceof BooleanField) return $this->getName();
+        if ($this instanceof ForeignKeyField) return 'get'. ucfirst($this->getName()) . 'Id';
+        return 'get'. ucfirst($this->getName());
+    }
 }

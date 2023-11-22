@@ -3,15 +3,15 @@
 namespace Lkt\Factory\Schemas\Fields;
 
 use Lkt\Factory\Schemas\Traits\FieldWithNullOptionTrait;
-use Lkt\Factory\Schemas\Values\SecureSeedValue;
+use Lkt\Factory\Schemas\Traits\FieldWithSecureSeedTrait;
 
 class EncryptField extends AbstractField
 {
-    use FieldWithNullOptionTrait;
+    use FieldWithNullOptionTrait,
+        FieldWithSecureSeedTrait;
 
     protected string $algorithm = 'sha256';
     protected bool $hashMode = false;
-    protected ?SecureSeedValue $secureSeed = null;
 
     public function setAlgorithmSHA256(): static
     {
@@ -22,17 +22,6 @@ class EncryptField extends AbstractField
     public function hasAlgorithmSHA256(): bool
     {
         return $this->algorithm === 'sha256';
-    }
-
-    public function setSecureSeed(string $secureSeed): static
-    {
-        $this->secureSeed = new SecureSeedValue($secureSeed);
-        return $this;
-    }
-
-    public function getSecureSeed(): string
-    {
-        return $this->secureSeed->getValue();
     }
 
     public function setHashMode(bool $status = true): static

@@ -13,6 +13,7 @@ use Lkt\Factory\Schemas\Exceptions\SchemaNotDefinedException;
 use Lkt\Factory\Schemas\Fields\AbstractField;
 use Lkt\Factory\Schemas\Fields\BooleanField;
 use Lkt\Factory\Schemas\Fields\ColorField;
+use Lkt\Factory\Schemas\Fields\FileField;
 use Lkt\Factory\Schemas\Fields\ForeignKeyField;
 use Lkt\Factory\Schemas\Fields\ForeignKeysField;
 use Lkt\Factory\Schemas\Fields\IdField;
@@ -410,17 +411,13 @@ final class Schema
     public function getField(string $field): ?AbstractField
     {
         $haystack = $this->getAllFields();
-        if (isset($haystack[$field])) {
-            return $haystack[$field];
-        }
+        if (isset($haystack[$field])) return $haystack[$field];
 
         // Catch foreign keys cast to integer keys
         $l = strlen($field);
         $endsWithId = substr($field, $l - 2, 2) === 'Id';
 
-        if (!$endsWithId) {
-            return null;
-        }
+        if (!$endsWithId) return null;
 
         $keyWithoutId = substr($field, 0, $l - 2);
         if (isset($haystack[$keyWithoutId]) && $haystack[$keyWithoutId] instanceof ForeignKeyField) {
@@ -429,30 +426,31 @@ final class Schema
         return null;
     }
 
+    public function getFileField(string $field): ?FileField
+    {
+        $r = $this->getField($field);
+        if ($r instanceof FileField) return $r;
+        return null;
+    }
+
     public function getRelatedField(string $field): ?RelatedField
     {
         $r = $this->getField($field);
-        if ($r instanceof RelatedField) {
-            return $r;
-        }
+        if ($r instanceof RelatedField) return $r;
         return null;
     }
 
     public function getForeignKeyField(string $field): ?ForeignKeyField
     {
         $r = $this->getField($field);
-        if ($r instanceof ForeignKeyField) {
-            return $r;
-        }
+        if ($r instanceof ForeignKeyField) return $r;
         return null;
     }
 
     public function getForeignKeysField(string $field): ?ForeignKeysField
     {
         $r = $this->getField($field);
-        if ($r instanceof ForeignKeysField) {
-            return $r;
-        }
+        if ($r instanceof ForeignKeysField) return $r;
         return null;
     }
 
@@ -460,9 +458,7 @@ final class Schema
     {
         $results = $this->getFieldsPointingToComponent($component);
         foreach ($results as $result) {
-            if ($result instanceof ForeignKeysField) {
-                return $result;
-            }
+            if ($result instanceof ForeignKeysField) return $result;
         }
         return null;
     }
@@ -470,9 +466,7 @@ final class Schema
     public function getPivotField(string $field): ?PivotField
     {
         $r = $this->getField($field);
-        if ($r instanceof PivotField) {
-            return $r;
-        }
+        if ($r instanceof PivotField) return $r;
         return null;
     }
 
@@ -483,9 +477,7 @@ final class Schema
      */
     public function getIdentifiers(): array
     {
-        if (count($this->idFields) > 0) {
-            return $this->idFields;
-        }
+        if (count($this->idFields) > 0) return $this->idFields;
 
         /** @var AbstractField[] $stack */
         $stack = $this->getAllFields();
