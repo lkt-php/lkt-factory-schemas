@@ -51,6 +51,11 @@ abstract class AbstractField
         return null;
     }
 
+    public function getSetter(): string
+    {
+        return 'set'. ucfirst($this->getName());
+    }
+
     public function getGetterForComputed(): string
     {
         if ($this instanceof BooleanField) {

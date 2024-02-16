@@ -17,6 +17,7 @@ use Lkt\Factory\Schemas\Fields\FileField;
 use Lkt\Factory\Schemas\Fields\ForeignKeyField;
 use Lkt\Factory\Schemas\Fields\ForeignKeysField;
 use Lkt\Factory\Schemas\Fields\IdField;
+use Lkt\Factory\Schemas\Fields\IntegerChoiceField;
 use Lkt\Factory\Schemas\Fields\IntegerField;
 use Lkt\Factory\Schemas\Fields\PivotField;
 use Lkt\Factory\Schemas\Fields\PivotLeftIdField;
@@ -24,6 +25,7 @@ use Lkt\Factory\Schemas\Fields\PivotRightIdField;
 use Lkt\Factory\Schemas\Fields\RelatedField;
 use Lkt\Factory\Schemas\Fields\RelatedKeysField;
 use Lkt\Factory\Schemas\Fields\RelatedKeysMergeField;
+use Lkt\Factory\Schemas\Fields\StringChoiceField;
 use Lkt\Factory\Schemas\Fields\StringField;
 use Lkt\Factory\Schemas\Values\ComponentValue;
 use Lkt\Factory\Schemas\Values\TableValue;
@@ -366,6 +368,34 @@ final class Schema
                 || $field instanceof RelatedKeysField
                 || $field instanceof RelatedKeysMergeField) {
                 return true;
+            }
+            return false;
+        });
+    }
+
+    /**
+     * @return AbstractField[]
+     */
+    public function getChoiceFields(): array
+    {
+        return array_filter($this->getAllFields(), function (AbstractField $field) {
+            if ($field instanceof StringChoiceField
+                || $field instanceof IntegerChoiceField) {
+                return true;
+            }
+            return false;
+        });
+    }
+
+    /**
+     * @return AbstractField[]
+     */
+    public function getChoiceFieldsWithDefaultValue(): array
+    {
+        return array_filter($this->getAllFields(), function (AbstractField $field) {
+            if ($field instanceof StringChoiceField
+                || $field instanceof IntegerChoiceField) {
+                return $field->hasEmptyDefault();
             }
             return false;
         });

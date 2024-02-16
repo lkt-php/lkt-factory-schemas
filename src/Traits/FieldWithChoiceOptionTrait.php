@@ -8,6 +8,9 @@ trait FieldWithChoiceOptionTrait
 
     protected array $compareIn = [];
 
+    protected bool $enabledEmptyPreset = false;
+    protected string|int|null $emptyDefault = null;
+
     final public function setAllowedOptions(array $options): static
     {
         $this->allowedOptions = $options;
@@ -33,5 +36,32 @@ trait FieldWithChoiceOptionTrait
     final public function getComparatorsIn(): array
     {
         return $this->compareIn;
+    }
+
+    final public function setEnabledEmptyPreset($enabled = true): static
+    {
+        $this->enabledEmptyPreset = $enabled;
+        return $this;
+    }
+
+    final public function hasEnabledEmptyPreset(): bool
+    {
+        return $this->enabledEmptyPreset;
+    }
+
+    final public function setEmptyDefault(string|int $value): static
+    {
+        $this->emptyDefault = $value;
+        return $this;
+    }
+
+    final public function hasEmptyDefault(): bool
+    {
+        return $this->emptyDefault !== null;
+    }
+
+    final public function getEmptyDefault(): int|string|null
+    {
+        return $this->emptyDefault;
     }
 }
