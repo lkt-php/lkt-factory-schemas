@@ -3,6 +3,7 @@
 namespace Lkt\Factory\Schemas\Fields;
 
 use Lkt\Factory\Schemas\Exceptions\InvalidFieldNameException;
+use Lkt\Factory\Schemas\Values\BooleanValue;
 use Lkt\Factory\Schemas\Values\FieldColumnValue;
 use Lkt\Factory\Schemas\Values\FieldCustomTypeValue;
 use Lkt\Factory\Schemas\Values\FieldLabelValue;
@@ -16,6 +17,9 @@ abstract class AbstractField
     protected FieldColumnValue $column;
     protected FieldLabelValue $label;
     protected FieldCustomTypeValue $customType;
+
+    protected BooleanValue $showInCreateView;
+    protected BooleanValue $showInUpdateView;
 
 
     /**
@@ -99,5 +103,27 @@ abstract class AbstractField
     public function getCustomType(): string
     {
         return $this->customType->getValue();
+    }
+
+    public function setIsVisibleInCreateView(bool $enabled = true): static
+    {
+        $this->showInCreateView = new BooleanValue($enabled);
+        return $this;
+    }
+
+    public function isVisibleInCreateView(): bool
+    {
+        return $this->showInCreateView->getValue();
+    }
+
+    public function setIsVisibleInUpdateView(bool $enabled = true): static
+    {
+        $this->showInUpdateView = new BooleanValue($enabled);
+        return $this;
+    }
+
+    public function isVisibleInUpdateView(): bool
+    {
+        return $this->showInUpdateView->getValue();
     }
 }

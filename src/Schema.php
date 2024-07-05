@@ -692,4 +692,18 @@ final class Schema
     {
         return $this->addField(ColorField::define($name, $column)->setNullable($nullable));
     }
+
+    public function getFieldsVisiblesInCreateView(): array
+    {
+        return array_filter($this->getAllFields(), function (AbstractField $field) {
+            return $field->isVisibleInCreateView();
+        });
+    }
+
+    public function getFieldsVisiblesInUpdateView(): array
+    {
+        return array_filter($this->getAllFields(), function (AbstractField $field) {
+            return $field->isVisibleInUpdateView();
+        });
+    }
 }
