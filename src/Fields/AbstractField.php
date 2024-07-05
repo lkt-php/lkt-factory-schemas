@@ -4,12 +4,14 @@ namespace Lkt\Factory\Schemas\Fields;
 
 use Lkt\Factory\Schemas\Exceptions\InvalidFieldNameException;
 use Lkt\Factory\Schemas\Values\FieldColumnValue;
+use Lkt\Factory\Schemas\Values\FieldLabelValue;
 use Lkt\Factory\Schemas\Values\FieldNameValue;
 
 abstract class AbstractField
 {
     protected FieldNameValue $name;
     protected FieldColumnValue $column;
+    protected FieldLabelValue $label;
 
 
     /**
@@ -19,6 +21,7 @@ abstract class AbstractField
     {
         $this->name = new FieldNameValue($name);
         $this->column = new FieldColumnValue($column, $this->name->getValue());
+        $this->label = new FieldLabelValue('');
     }
 
     final public function getName(): string
@@ -69,5 +72,16 @@ abstract class AbstractField
         if ($this instanceof BooleanField) return $this->getName();
         if ($this instanceof ForeignKeyField) return 'get'. ucfirst($this->getName()) . 'Id';
         return 'get'. ucfirst($this->getName());
+    }
+
+    public function setLabel(string $label): static
+    {
+        $this->label = new FieldLabelValue($label);
+        return $this;
+    }
+
+    public function getLabel(): string
+    {
+        return $this->label->getValue();
     }
 }
