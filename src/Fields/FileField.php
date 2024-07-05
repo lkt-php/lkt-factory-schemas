@@ -8,6 +8,8 @@ use Lkt\Factory\Schemas\Values\FieldFilePathValue;
 
 class FileField extends AbstractField
 {
+    const TYPE = 'file';
+
     use FieldWithNullOptionTrait;
 
     protected ?FieldFilePathValue $storePath = null;

@@ -6,5 +6,7 @@ use Lkt\Factory\Schemas\Traits\FieldWithNullOptionTrait;
 
 class BooleanField extends AbstractField
 {
+    const TYPE = 'boolean';
+
     use FieldWithNullOptionTrait;
 }

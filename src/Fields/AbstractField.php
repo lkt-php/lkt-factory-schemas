@@ -4,14 +4,18 @@ namespace Lkt\Factory\Schemas\Fields;
 
 use Lkt\Factory\Schemas\Exceptions\InvalidFieldNameException;
 use Lkt\Factory\Schemas\Values\FieldColumnValue;
+use Lkt\Factory\Schemas\Values\FieldCustomTypeValue;
 use Lkt\Factory\Schemas\Values\FieldLabelValue;
 use Lkt\Factory\Schemas\Values\FieldNameValue;
 
 abstract class AbstractField
 {
+    const TYPE = '';
+
     protected FieldNameValue $name;
     protected FieldColumnValue $column;
     protected FieldLabelValue $label;
+    protected FieldCustomTypeValue $customType;
 
 
     /**
@@ -22,6 +26,7 @@ abstract class AbstractField
         $this->name = new FieldNameValue($name);
         $this->column = new FieldColumnValue($column, $this->name->getValue());
         $this->label = new FieldLabelValue('');
+        $this->customType = new FieldCustomTypeValue(self::TYPE);
     }
 
     final public function getName(): string
@@ -83,5 +88,16 @@ abstract class AbstractField
     public function getLabel(): string
     {
         return $this->label->getValue();
+    }
+
+    public function setCustomType(string $type): static
+    {
+        $this->customType = new FieldCustomTypeValue($type);
+        return $this;
+    }
+
+    public function getCustomType(): string
+    {
+        return $this->customType->getValue();
     }
 }

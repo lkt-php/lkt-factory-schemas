@@ -7,6 +7,8 @@ use Lkt\Factory\Schemas\Traits\FieldWithNullOptionTrait;
 
 class StringField extends AbstractField
 {
+    const TYPE = 'text';
+
     use FieldWithNullOptionTrait,
         FieldWithJsonI18nStorageTrait;
 }

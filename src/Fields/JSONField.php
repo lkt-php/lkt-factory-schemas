@@ -8,6 +8,8 @@ use Lkt\Factory\Schemas\Values\BooleanValue;
 
 class JSONField extends AbstractField
 {
+    const TYPE = 'json';
+
     use FieldWithCompressOptionTrait,
         FieldWithNullOptionTrait;
 

@@ -12,6 +12,8 @@ use Lkt\Factory\Schemas\Traits\FieldWithWhereOptionTrait;
 
 class RelatedField extends AbstractField
 {
+    const TYPE = 'related';
+
     use FieldWithComponentOptionTrait,
         FieldWithWhereOptionTrait,
         FieldWithOrderOptionTrait,
