@@ -37,6 +37,15 @@ abstract class AbstractField
         $this->column = new FieldColumnValue($column, $this->name->getValue());
         $this->label = new FieldLabelValue('');
         $this->customType = new FieldCustomTypeValue(self::TYPE);
+
+        $this->showInCreateView = new BooleanValue(false);
+        $this->showInUpdateView = new BooleanValue(false);
+        $this->hideInCreateView = new BooleanValue(false);
+        $this->hideInUpdateView = new BooleanValue(false);
+        $this->editInCreateView = new BooleanValue(false);
+        $this->editInUpdateView = new BooleanValue(false);
+        $this->dataInCreateView = new BooleanValue(false);
+        $this->dataInUpdateView = new BooleanValue(false);
     }
 
     final public function getName(): string
