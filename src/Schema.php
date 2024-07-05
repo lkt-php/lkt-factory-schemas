@@ -693,17 +693,23 @@ final class Schema
         return $this->addField(ColorField::define($name, $column)->setNullable($nullable));
     }
 
-    public function getFieldsVisiblesInCreateView(): array
+    public function getFieldsAvailableInCreateView(): array
     {
         return array_filter($this->getAllFields(), function (AbstractField $field) {
-            return $field->isVisibleInCreateView();
+            return $field->isVisibleInCreateView()
+                || $field->isEditableInCreateView()
+                || $field->isHiddenInCreateView()
+                || $field->isDataInCreateView();
         });
     }
 
-    public function getFieldsVisiblesInUpdateView(): array
+    public function getFieldsAvailableInUpdateView(): array
     {
         return array_filter($this->getAllFields(), function (AbstractField $field) {
-            return $field->isVisibleInUpdateView();
+            return $field->isVisibleInUpdateView()
+                || $field->isEditableInUpdateView()
+                || $field->isHiddenInUpdateView()
+                || $field->isDataInUpdateView();
         });
     }
 }
