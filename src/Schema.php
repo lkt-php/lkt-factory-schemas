@@ -36,6 +36,8 @@ final class Schema
     /** @var Schema[] */
     private static array $stack = [];
 
+    protected array $fieldsPerView = [];
+
     /**
      * @return Schema[]
      */
@@ -68,6 +70,26 @@ final class Schema
             throw new SchemaNotDefinedException($code);
         }
         return self::$stack[$code];
+    }
+
+    /**
+     * @throws SchemaNotDefinedException
+     */
+    public static function getFromTable(string $table): self
+    {
+        $result = array_filter(self::$stack, function (Schema $schema) use ($table) {
+            return $schema->getTable() === $table;
+        });
+
+        if (count($result) > 0) {
+            $result = reset($result);
+
+            if (!$result instanceof Schema) {
+                throw new SchemaNotDefinedException($table);
+            }
+            return $result;
+        }
+        throw new SchemaNotDefinedException($table);
     }
 
     public static function exists(string $code): bool
@@ -456,6 +478,30 @@ final class Schema
         return null;
     }
 
+    public function getFeedField(string $field): ?AbstractField
+    {
+        $haystack = $this->getAllFields();
+
+        if (isset($haystack[$field])) {
+            if ($haystack[$field] instanceof RelatedKeysField) {
+                return null;
+            }
+            return $haystack[$field];
+        }
+
+        // Catch foreign keys cast to integer keys
+        $l = strlen($field);
+        $endsWithId = substr($field, $l - 2, 2) === 'Id';
+
+        if (!$endsWithId) return null;
+
+        $keyWithoutId = substr($field, 0, $l - 2);
+        if (isset($haystack[$keyWithoutId]) && $haystack[$keyWithoutId] instanceof ForeignKeyField) {
+            return $haystack[$keyWithoutId];
+        }
+        return null;
+    }
+
     public function getFileField(string $field): ?FileField
     {
         $r = $this->getField($field);
@@ -710,6 +756,19 @@ final class Schema
                 || $field->isEditableInUpdateView()
                 || $field->isHiddenInUpdateView()
                 || $field->isDataInUpdateView();
+        });
+    }
+
+    public function setFieldsForView(string $view, array $fields)
+    {
+        $this->fieldsPerView[$view] = $fields;
+        return $this;
+    }
+
+    public function getViewFields(string $view)
+    {
+        return array_filter($this->getAllFields(), function (AbstractField $field) use ($view) {
+            return in_array($field->getName(), $this->fieldsPerView[$view]);
         });
     }
 }

@@ -36,7 +36,7 @@ abstract class AbstractField
         $this->name = new FieldNameValue($name);
         $this->column = new FieldColumnValue($column, $this->name->getValue());
         $this->label = new FieldLabelValue('');
-        $this->customType = new FieldCustomTypeValue(self::TYPE);
+        $this->customType = new FieldCustomTypeValue(static::TYPE);
 
         $this->showInCreateView = new BooleanValue(false);
         $this->showInUpdateView = new BooleanValue(false);
