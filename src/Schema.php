@@ -37,6 +37,7 @@ final class Schema
     private static array $stack = [];
 
     protected array $fieldsPerView = [];
+    protected array $fieldsForRelatedMode = [];
 
     /**
      * @return Schema[]
@@ -770,5 +771,38 @@ final class Schema
         return array_filter($this->getAllFields(), function (AbstractField $field) use ($view) {
             return in_array($field->getName(), $this->fieldsPerView[$view]);
         });
+    }
+
+    public function setFieldsForRelatedMode(string $value, string $label, array $additionalFields): static
+    {
+        $this->fieldsForRelatedMode = [$value, $label, $additionalFields];
+        return $this;
+    }
+
+    public function getRelatedModeValueField(): ?AbstractField
+    {
+        if (isset($this->fieldsForRelatedMode[0])) return $this->getField($this->fieldsForRelatedMode[0]);
+        return null;
+    }
+
+    public function getRelatedModeLabelField(): ?AbstractField
+    {
+        if (isset($this->fieldsForRelatedMode[1])) return $this->getField($this->fieldsForRelatedMode[1]);
+        return null;
+    }
+
+    /**
+     * @return AbstractField[]
+     * @throws InvalidComponentException
+     * @throws SchemaNotDefinedException
+     */
+    public function getRelatedModeAdditionalFields(): array
+    {
+        if (isset($this->fieldsForRelatedMode[2]) && is_array($this->fieldsForRelatedMode[2])&& count($this->fieldsForRelatedMode[2]) > 0) {
+            $r = [];
+            foreach ($this->fieldsForRelatedMode[2] as $f) $r[] = $this->getField($f);
+            return $r;
+        }
+        return [];
     }
 }
