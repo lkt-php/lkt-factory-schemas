@@ -22,8 +22,21 @@ class RelatedField extends AbstractField
         FieldWithMultipleReferencesTrait,
         FieldWithPaginationOptionTrait;
 
+    protected $relatedComponentFeeds = [];
+
     public static function defineRelation(string $component, string $name, string $column = ''): static
     {
         return (new static($name, $column))->setComponent($component);
+    }
+
+    public function addRelatedComponentFeed(string $column, $value): static
+    {
+        $this->relatedComponentFeeds[$column] = $value;
+        return $this;
+    }
+
+    public function getRelatedComponentFeeds(): array
+    {
+        return $this->relatedComponentFeeds;
     }
 }
