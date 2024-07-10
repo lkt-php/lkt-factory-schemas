@@ -6,6 +6,7 @@ use Lkt\Factory\Schemas\Traits\FieldWithAllowAnonymousOptionTrait;
 use Lkt\Factory\Schemas\Traits\FieldWithNullOptionTrait;
 use Lkt\Factory\Schemas\Traits\FieldWithComponentOptionTrait;
 use Lkt\Factory\Schemas\Traits\FieldWithOrderOptionTrait;
+use Lkt\Factory\Schemas\Traits\FieldWithRelatedComponentFeedsTrait;
 use Lkt\Factory\Schemas\Traits\FieldWithSoftTypedOptionTrait;
 use Lkt\Factory\Schemas\Traits\FieldWithWhereOptionTrait;
 
@@ -16,7 +17,8 @@ class ForeignKeysField extends AbstractField
         FieldWithOrderOptionTrait,
         FieldWithSoftTypedOptionTrait,
         FieldWithAllowAnonymousOptionTrait,
-        FieldWithNullOptionTrait;
+        FieldWithNullOptionTrait,
+        FieldWithRelatedComponentFeedsTrait;
 
     public static function defineRelation(string $component, string $name, string $column = ''): static
     {
