@@ -466,6 +466,12 @@ final class Schema
         $haystack = $this->getAllFields();
         if (isset($haystack[$field])) return $haystack[$field];
 
+        // Check if column is configured
+        $found = array_filter($this->getFields(), function (AbstractField $f) use ($field) {
+            return $f->getColumn() === $field;
+        });
+        if (count($found) > 0) return reset($found);
+
         // Catch foreign keys cast to integer keys
         $l = strlen($field);
         $endsWithId = substr($field, $l - 2, 2) === 'Id';
@@ -800,7 +806,12 @@ final class Schema
     {
         if (isset($this->fieldsForRelatedMode[2]) && is_array($this->fieldsForRelatedMode[2])&& count($this->fieldsForRelatedMode[2]) > 0) {
             $r = [];
-            foreach ($this->fieldsForRelatedMode[2] as $f) $r[] = $this->getField($f);
+            foreach ($this->fieldsForRelatedMode[2] as $k => $f) {
+                $storeKey = $k;
+                $field = $this->getField($f);
+                if (is_numeric($storeKey)) $storeKey = $field->getName();
+                $r[$storeKey] = $field;
+            }
             return $r;
         }
         return [];
