@@ -95,6 +95,7 @@ abstract class AbstractField
     {
         if ($this instanceof BooleanField) return $this->getName();
         if ($this instanceof ForeignKeyField) return 'get'. ucfirst($this->getName()) . 'Id';
+        if ($this instanceof ForeignKeysField) return 'get'. ucfirst($this->getName()) . 'Ids';
         return 'get'. ucfirst($this->getName());
     }
 
