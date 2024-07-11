@@ -472,15 +472,23 @@ final class Schema
         });
         if (count($found) > 0) return reset($found);
 
-        // Catch foreign keys cast to integer keys
+        // Catch foreign key cast to integer keys
         $l = strlen($field);
         $endsWithId = substr($field, $l - 2, 2) === 'Id';
+        if ($endsWithId) {
+            $keyWithoutId = substr($field, 0, $l - 2);
+            if (isset($haystack[$keyWithoutId]) && $haystack[$keyWithoutId] instanceof ForeignKeyField) {
+                return $haystack[$keyWithoutId];
+            }
+        }
 
-        if (!$endsWithId) return null;
-
-        $keyWithoutId = substr($field, 0, $l - 2);
-        if (isset($haystack[$keyWithoutId]) && $haystack[$keyWithoutId] instanceof ForeignKeyField) {
-            return $haystack[$keyWithoutId];
+        $l = strlen($field);
+        $endsWithIds = substr($field, $l - 3, 3) === 'Ids';
+        if ($endsWithIds) {
+            $keyWithoutIds = substr($field, 0, $l - 3);
+            if (isset($haystack[$keyWithoutIds]) && $haystack[$keyWithoutIds] instanceof ForeignKeysField) {
+                return $haystack[$keyWithoutIds];
+            }
         }
         return null;
     }

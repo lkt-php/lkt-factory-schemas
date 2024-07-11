@@ -24,4 +24,9 @@ class ForeignKeysField extends AbstractField
     {
         return (new static($name, $column))->setComponent($component);
     }
+
+    public function keyIsIds(string $key): bool
+    {
+        return $key === $this->getName() . 'Ids';
+    }
 }
