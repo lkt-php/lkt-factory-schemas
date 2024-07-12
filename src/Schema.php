@@ -19,6 +19,7 @@ use Lkt\Factory\Schemas\Fields\ForeignKeysField;
 use Lkt\Factory\Schemas\Fields\IdField;
 use Lkt\Factory\Schemas\Fields\IntegerChoiceField;
 use Lkt\Factory\Schemas\Fields\IntegerField;
+use Lkt\Factory\Schemas\Fields\MethodGetterField;
 use Lkt\Factory\Schemas\Fields\PivotField;
 use Lkt\Factory\Schemas\Fields\PivotLeftIdField;
 use Lkt\Factory\Schemas\Fields\PivotRightIdField;
@@ -757,33 +758,29 @@ final class Schema
     public function getFieldsAvailableInCreateView(): array
     {
         return array_filter($this->getAllFields(), function (AbstractField $field) {
-            return $field->isVisibleInCreateView()
-                || $field->isEditableInCreateView()
-                || $field->isHiddenInCreateView()
-                || $field->isDataInCreateView();
+            return $field->hasViewConfigured('create');
         });
     }
 
     public function getFieldsAvailableInUpdateView(): array
     {
         return array_filter($this->getAllFields(), function (AbstractField $field) {
-            return $field->isVisibleInUpdateView()
-                || $field->isEditableInUpdateView()
-                || $field->isHiddenInUpdateView()
-                || $field->isDataInUpdateView();
+            return $field->hasViewConfigured('edit');
         });
     }
 
+    /** @deprecated  */
     public function setFieldsForView(string $view, array $fields)
     {
         $this->fieldsPerView[$view] = $fields;
         return $this;
     }
 
+    /** @deprecated  */
     public function getViewFields(string $view)
     {
         return array_filter($this->getAllFields(), function (AbstractField $field) use ($view) {
-            return in_array($field->getName(), $this->fieldsPerView[$view]);
+            return $field->hasViewConfigured($view);
         });
     }
 
@@ -812,7 +809,7 @@ final class Schema
      */
     public function getRelatedModeAdditionalFields(): array
     {
-        if (isset($this->fieldsForRelatedMode[2]) && is_array($this->fieldsForRelatedMode[2])&& count($this->fieldsForRelatedMode[2]) > 0) {
+        if (isset($this->fieldsForRelatedMode[2]) && is_array($this->fieldsForRelatedMode[2]) && count($this->fieldsForRelatedMode[2]) > 0) {
             $r = [];
             foreach ($this->fieldsForRelatedMode[2] as $k => $f) {
                 $storeKey = $k;
@@ -823,5 +820,26 @@ final class Schema
             return $r;
         }
         return [];
+    }
+
+    public function getViewConfigForFields(string $view): array
+    {
+        $fields = array_filter($this->getAllFields(), function (AbstractField $field) use ($view) {
+            return $field->hasViewConfigured($view);
+        });
+
+        $r = [];
+
+        foreach ($fields as $field) {
+            $cfg = $field->getViewConfig($view);
+            $r[] = [
+                'key' => $field instanceof MethodGetterField ? $field->getColumn() : $field->getName(),
+                'label' => $field->getLabel(),
+                'type' => $cfg->getDisplayComponent(),
+                'mode' => $cfg->getMode(),
+            ];
+        }
+
+        return $r;
     }
 }

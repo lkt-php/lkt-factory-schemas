@@ -8,6 +8,7 @@ use Lkt\Factory\Schemas\Values\FieldColumnValue;
 use Lkt\Factory\Schemas\Values\FieldCustomTypeValue;
 use Lkt\Factory\Schemas\Values\FieldLabelValue;
 use Lkt\Factory\Schemas\Values\FieldNameValue;
+use Lkt\Factory\Schemas\Views\FieldViewConfig;
 
 abstract class AbstractField
 {
@@ -26,6 +27,8 @@ abstract class AbstractField
     protected BooleanValue $editInUpdateView;
     protected BooleanValue $hideInUpdateView;
     protected BooleanValue $dataInUpdateView;
+
+    protected $configuredViews = [];
 
 
     /**
@@ -127,6 +130,7 @@ abstract class AbstractField
     {
         return $this->customType->getValue();
     }
+    /** @deprecated  */
 
     public function setIsVisibleInCreateView(bool $enabled = true): static
     {
@@ -134,83 +138,98 @@ abstract class AbstractField
         return $this;
     }
 
+    /** @deprecated  */
     public function isVisibleInCreateView(): bool
     {
         return $this->showInCreateView->getValue();
     }
 
+    /** @deprecated  */
     public function setIsEditableInCreateView(bool $enabled = true): static
     {
         $this->editInCreateView = new BooleanValue($enabled);
         return $this;
     }
+    /** @deprecated  */
 
     public function isEditableInCreateView(): bool
     {
         return $this->editInCreateView->getValue();
     }
 
+    /** @deprecated  */
     public function setIsHiddenInCreateView(bool $enabled = true): static
     {
         $this->hideInCreateView = new BooleanValue($enabled);
         return $this;
     }
 
+    /** @deprecated  */
     public function isHiddenInCreateView(): bool
     {
         return $this->hideInCreateView->getValue();
     }
+    /** @deprecated  */
 
     public function setIsDataInCreateView(bool $enabled = true): static
     {
         $this->hideInCreateView = new BooleanValue($enabled);
         return $this;
     }
+    /** @deprecated  */
 
     public function isDataInCreateView(): bool
     {
         return $this->dataInCreateView->getValue();
     }
 
+    /** @deprecated  */
     public function setIsVisibleInUpdateView(bool $enabled = true): static
     {
         $this->showInUpdateView = new BooleanValue($enabled);
         return $this;
     }
 
+    /** @deprecated  */
     public function isVisibleInUpdateView(): bool
     {
         return $this->showInUpdateView->getValue();
     }
 
+    /** @deprecated  */
     public function setIsEditableInUpdateView(bool $enabled = true): static
     {
         $this->editInUpdateView = new BooleanValue($enabled);
         return $this;
     }
 
+    /** @deprecated  */
     public function isEditableInUpdateView(): bool
     {
         return $this->editInUpdateView->getValue();
     }
 
+    /** @deprecated  */
     public function setIsHiddenInUpdateView(bool $enabled = true): static
     {
         $this->hideInUpdateView = new BooleanValue($enabled);
         return $this;
     }
 
+    /** @deprecated  */
     public function isHiddenInUpdateView(): bool
     {
         return $this->hideInUpdateView->getValue();
     }
 
+    /** @deprecated  */
     public function setIsDataInUpdateView(bool $enabled = true): static
     {
         $this->dataInUpdateView = new BooleanValue($enabled);
         return $this;
     }
 
+    /** @deprecated  */
     public function isDataInUpdateView(): bool
     {
         return $this->dataInUpdateView->getValue();
@@ -218,6 +237,9 @@ abstract class AbstractField
 
     public function getModeInCreateView(): string
     {
+        if ($this->hasViewConfigured('create')) {
+            return $this->configuredViews['create']->getMode();
+        }
         if ($this->isEditableInCreateView()) return 'edit';
         if ($this->isVisibleInCreateView()) return 'read';
         if ($this->isHiddenInCreateView()) return 'hide';
@@ -227,10 +249,29 @@ abstract class AbstractField
 
     public function getModeInUpdateView(): string
     {
+        if ($this->hasViewConfigured('edit')) {
+            return $this->configuredViews['edit']->getMode();
+        }
         if ($this->isEditableInUpdateView()) return 'edit';
         if ($this->isVisibleInUpdateView()) return 'read';
         if ($this->isHiddenInUpdateView()) return 'hide';
         if ($this->isDataInUpdateView()) return 'data';
         return 'data';
+    }
+
+    public function configureView(FieldViewConfig $config): static
+    {
+        $this->configuredViews[$config->getName()] = $config;
+        return $this;
+    }
+
+    public function hasViewConfigured(string $name)
+    {
+        return isset($this->configuredViews[$name]);
+    }
+
+    public function getViewConfig(string $name): FieldViewConfig
+    {
+        return $this->configuredViews[$name];
     }
 }
