@@ -457,6 +457,13 @@ final class Schema
         });
     }
 
+    public function getFieldsWithDefaultValue(): array
+    {
+        return array_filter($this->getAllFields(), function (AbstractField $field) {
+            return $field->hasDefaultValue();
+        });
+    }
+
     /**
      * @param string $field
      * @return AbstractField|null

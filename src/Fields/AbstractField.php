@@ -30,6 +30,8 @@ abstract class AbstractField
 
     protected $configuredViews = [];
 
+    protected $defaultValue = [];
+
 
     /**
      * @throws InvalidFieldNameException
@@ -273,5 +275,25 @@ abstract class AbstractField
     public function getViewConfig(string $name): FieldViewConfig
     {
         return $this->configuredViews[$name];
+    }
+
+    public function setDefaultValue($value)
+    {
+        $this->defaultValue[0] = $value;
+        return $this;
+    }
+
+    public function hasDefaultValue(): bool
+    {
+        return isset($this->defaultValue[0]);
+    }
+
+    public function getDefaultValue(): mixed
+    {
+        if (is_callable($this->defaultValue[0])) {
+            return call_user_func($this->defaultValue[0]);
+        }
+
+        return $this->defaultValue[0];
     }
 }
