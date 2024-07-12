@@ -39,6 +39,7 @@ final class Schema
 
     protected array $fieldsPerView = [];
     protected array $fieldsForRelatedMode = [];
+    protected array $excludeFieldFromViewFeed = [];
 
     /**
      * @return Schema[]
@@ -837,9 +838,22 @@ final class Schema
                 'label' => $field->getLabel(),
                 'type' => $cfg->getDisplayComponent(),
                 'mode' => $cfg->getMode(),
+                'relatedComponent' => $field instanceof ForeignKeysField ? $field->getComponent() : '',
             ];
         }
 
         return $r;
+    }
+
+    public function setExcludedFieldsForViewFeed(string $view, array $fields): static
+    {
+        $this->excludeFieldFromViewFeed[$view] = $fields;
+        return $this;
+    }
+
+    public function hasToExcludeFieldFromViewFeed(string $view, string $field): bool
+    {
+        if (!$this->excludeFieldFromViewFeed[$view]) return false;
+        return in_array($field, $this->excludeFieldFromViewFeed[$view]);
     }
 }

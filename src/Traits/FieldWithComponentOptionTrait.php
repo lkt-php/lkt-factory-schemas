@@ -9,6 +9,8 @@ trait FieldWithComponentOptionTrait
 {
     protected ?ComponentValue $component = null;
 
+    protected bool $autoRemoveUnlinked = false;
+
     /**
      * @param string $component
      * @return $this
@@ -26,5 +28,16 @@ trait FieldWithComponentOptionTrait
             return $this->component->getValue();
         }
         return '';
+    }
+
+    public function setAutoRemoveUnlinked(bool $enabled = true): static
+    {
+        $this->autoRemoveUnlinked = $enabled;
+        return $this;
+    }
+
+    public function hasToAutoRemoveUnlinked(): bool
+    {
+        return $this->autoRemoveUnlinked;
     }
 }
