@@ -285,11 +285,17 @@ abstract class AbstractField
 
     public function hasDefaultValue(): bool
     {
+        if (property_exists($this, 'defaultCurrentTimestamp') && $this->defaultCurrentTimestamp === true) {
+            return true;
+        }
         return isset($this->defaultValue[0]);
     }
 
     public function getDefaultValue(): mixed
     {
+        if (property_exists($this, 'defaultCurrentTimestamp') && $this->defaultCurrentTimestamp === true) {
+            return new \DateTime();
+        }
         if (is_callable($this->defaultValue[0])) {
             return call_user_func($this->defaultValue[0]);
         }
