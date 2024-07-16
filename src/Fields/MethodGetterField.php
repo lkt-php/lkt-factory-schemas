@@ -2,7 +2,9 @@
 
 namespace Lkt\Factory\Schemas\Fields;
 
-class MethodGetterField extends AbstractField
+use Lkt\Factory\Schemas\ComputedFields\AbstractComputedField;
+
+class MethodGetterField extends AbstractComputedField
 {
     const TYPE = 'method-getter';
 }

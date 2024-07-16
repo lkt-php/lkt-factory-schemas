@@ -30,6 +30,7 @@ use Lkt\Factory\Schemas\Fields\StringChoiceField;
 use Lkt\Factory\Schemas\Fields\StringField;
 use Lkt\Factory\Schemas\Values\ComponentValue;
 use Lkt\Factory\Schemas\Values\TableValue;
+use Lkt\Factory\Schemas\Views\Layouts\SchemaLayout;
 use function Lkt\Tools\Arrays\getArrayFirstPosition;
 
 final class Schema
@@ -862,5 +863,24 @@ final class Schema
     {
         if (!$this->excludeFieldFromViewFeed[$view]) return false;
         return in_array($field, $this->excludeFieldFromViewFeed[$view]);
+    }
+
+
+    protected array $schemaLayouts = [];
+
+    public function setLayout(SchemaLayout $layout): static
+    {
+        $this->schemaLayouts[$layout->getName()] = $layout;
+        return $this;
+    }
+
+    public function getViewLayout(string $name, bool $asArray = false): null|SchemaLayout|array
+    {
+        if (isset($this->schemaLayouts[$name])){
+            if ($asArray) return $this->schemaLayouts[$name]->toArray();
+            return $this->schemaLayouts[$name];
+        }
+        if ($asArray) return [];
+        return null;
     }
 }

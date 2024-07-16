@@ -16,4 +16,9 @@ class ForeignKeyField extends IntegerField
     {
         return (new static($name, $column))->setComponent($component);
     }
+
+    public function keyIsId(string $key): bool
+    {
+        return $key === $this->getName() . 'Id';
+    }
 }
