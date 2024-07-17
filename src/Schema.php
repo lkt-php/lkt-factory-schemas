@@ -847,6 +847,7 @@ final class Schema
                 'type' => $cfg->getDisplayComponent(),
                 'mode' => $cfg->getMode(),
                 'relatedComponent' => $field instanceof ForeignKeysField ? $field->getComponent() : '',
+                'i18nOptions' => $field instanceof StringChoiceField ? $field->getI18nViewOptions() : '',
             ];
         }
 
@@ -868,9 +869,12 @@ final class Schema
 
     protected array $schemaLayouts = [];
 
-    public function setLayout(SchemaLayout $layout): static
+    public function setLayout(SchemaLayout $layout, array $views = []): static
     {
         $this->schemaLayouts[$layout->getName()] = $layout;
+        foreach ($views as $view) {
+            $this->schemaLayouts[$view] = $layout;
+        }
         return $this;
     }
 

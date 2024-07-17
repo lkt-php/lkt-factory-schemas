@@ -35,6 +35,7 @@ class GridLayout extends SchemaLayout
             'amountOfItems' => $this->amountOfItems,
             'content' => [],
             'conditionalModes' => $this->conditionalModes,
+            'conditionalTypes' => $this->conditionalTypes,
         ];
 
         foreach ($this->content as $item) {

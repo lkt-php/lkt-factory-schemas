@@ -10,6 +10,7 @@ trait FieldWithChoiceOptionTrait
 
     protected bool $enabledEmptyPreset = false;
     protected string|int|null $emptyDefault = null;
+    protected string $i18nViewOptions = '';
 
     final public function setAllowedOptions(array $options): static
     {
@@ -63,5 +64,21 @@ trait FieldWithChoiceOptionTrait
     final public function getEmptyDefault(): int|string|null
     {
         return $this->emptyDefault;
+    }
+
+    final public function setI18nViewOptions(string $value): static
+    {
+        $this->i18nViewOptions = $value;
+        return $this;
+    }
+
+    final public function hasI18nViewOptions(): bool
+    {
+        return $this->i18nViewOptions !== '';
+    }
+
+    final public function getI18nViewOptions(): string
+    {
+        return $this->i18nViewOptions;
     }
 }

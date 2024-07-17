@@ -6,6 +6,7 @@ class SchemaLayout
 {
     protected string $name = '';
     protected array $conditionalModes = [];
+    protected array $conditionalTypes = [];
 
     public function getName(): string
     {
@@ -18,6 +19,16 @@ class SchemaLayout
             'field' => $field,
             'value' => $value,
             'modes' => $modes,
+        ];
+        return $this;
+    }
+
+    public function setConditionalTypes(string $field, mixed $value, array $types): static
+    {
+        $this->conditionalTypes[] = [
+            'field' => $field,
+            'value' => $value,
+            'types' => $types,
         ];
         return $this;
     }
