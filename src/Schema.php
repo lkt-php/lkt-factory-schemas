@@ -823,7 +823,7 @@ final class Schema
             foreach ($this->fieldsForRelatedMode[2] as $k => $f) {
                 $storeKey = $k;
                 $field = $this->getField($f);
-                if (is_numeric($storeKey)) $storeKey = $field->getName();
+                if (is_numeric($storeKey) && is_object($field)) $storeKey = $field->getName();
                 $r[$storeKey] = $field;
             }
             return $r;
@@ -846,7 +846,7 @@ final class Schema
                 'label' => $field->getLabel(),
                 'type' => $cfg->getDisplayComponent(),
                 'mode' => $cfg->getMode(),
-                'relatedComponent' => $field instanceof ForeignKeysField ? $field->getComponent() : '',
+                'relatedComponent' => $field instanceof ForeignKeysField || $field instanceof ForeignKeyField ? $field->getComponent() : '',
                 'i18nOptions' => $field instanceof StringChoiceField ? $field->getI18nViewOptions() : '',
             ];
         }
