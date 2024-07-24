@@ -7,6 +7,11 @@ class SchemaLayout
     protected string $name = '';
     protected array $conditionalModes = [];
     protected array $conditionalTypes = [];
+    protected array $conditionallyHidden = [];
+    protected array $conditionallyVisible = [];
+
+    protected string $boxTitle = '';
+    protected string $boxComponent = '';
 
     public function getName(): string
     {
@@ -30,6 +35,18 @@ class SchemaLayout
             'value' => $value,
             'types' => $types,
         ];
+        return $this;
+    }
+
+    public function setConditionallyHidden(string $field, mixed $value): static
+    {
+        $this->conditionallyHidden[$field] = $value;
+        return $this;
+    }
+
+    public function setConditionallyVisible(string $field, mixed $value): static
+    {
+        $this->conditionallyVisible[$field] = $value;
         return $this;
     }
 }

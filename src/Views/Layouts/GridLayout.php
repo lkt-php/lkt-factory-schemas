@@ -16,6 +16,13 @@ class GridLayout extends SchemaLayout
         return $r;
     }
 
+    public function setBox(string $title, string $component): static
+    {
+        $this->boxTitle = $title;
+        $this->boxComponent = $component;
+        return $this;
+    }
+
     public function setAmountOfItems(int $amountOfItems): static
     {
         $this->amountOfItems = $amountOfItems;
@@ -31,11 +38,16 @@ class GridLayout extends SchemaLayout
     public function toArray(): array
     {
         $r = [
+            'name' => $this->name,
             'type' => 'grid',
             'amountOfItems' => $this->amountOfItems,
             'content' => [],
             'conditionalModes' => $this->conditionalModes,
             'conditionalTypes' => $this->conditionalTypes,
+            'conditionallyHidden' => $this->conditionallyHidden,
+            'conditionallyVisible' => $this->conditionallyVisible,
+            'boxTitle' => $this->boxTitle,
+            'boxComponent' => $this->boxComponent,
         ];
 
         foreach ($this->content as $item) {

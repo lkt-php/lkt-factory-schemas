@@ -140,6 +140,12 @@ final class Schema
         return new static($table, $component);
     }
 
+
+    public static function module(string $component): self
+    {
+        return new static('_', $component);
+    }
+
     /**
      * @param string $table
      * @param string $component
@@ -534,6 +540,16 @@ final class Schema
         return null;
     }
 
+    /**
+     * @return FileField[]
+     */
+    public function getFileFields(): array
+    {
+        return array_filter($this->getFields(), function ($field) {
+            return $field instanceof FileField;
+        });
+    }
+
     public function getRelatedField(string $field): ?RelatedField
     {
         $r = $this->getField($field);
@@ -886,5 +902,11 @@ final class Schema
         }
         if ($asArray) return [];
         return null;
+    }
+
+    public function register(): static
+    {
+        static::$stack[$this->getComponent()] = $this;
+        return $this;
     }
 }
