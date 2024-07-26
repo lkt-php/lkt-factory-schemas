@@ -857,12 +857,16 @@ final class Schema
 
         foreach ($fields as $field) {
             $cfg = $field->getViewConfig($view);
+            $relatedComponent = '';
+            if ($field instanceof ForeignKeysField || $field instanceof ForeignKeyField || $field instanceof RelatedField) {
+                $relatedComponent = $field->getComponent();
+            }
             $r[] = [
                 'key' => $field instanceof MethodGetterField ? $field->getColumn() : $field->getName(),
                 'label' => $field->getLabel(),
                 'type' => $cfg->getDisplayComponent(),
                 'mode' => $cfg->getMode(),
-                'relatedComponent' => $field instanceof ForeignKeysField || $field instanceof ForeignKeyField ? $field->getComponent() : '',
+                'relatedComponent' => $relatedComponent,
                 'i18nOptions' => $field instanceof StringChoiceField ? $field->getI18nViewOptions() : '',
             ];
         }

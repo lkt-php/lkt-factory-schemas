@@ -28,4 +28,9 @@ class RelatedField extends AbstractField
     {
         return (new static($name, $column))->setComponent($component);
     }
+
+    public function getQueryBuilderGetter(): string
+    {
+        return $this->getGetterForPrimitiveValue() . 'QueryCaller';
+    }
 }
