@@ -146,7 +146,14 @@ final class InstanceSettings
         if ($this->classForGeneratedClass instanceof SchemaClassForGeneratedClassValue) {
             return $this->classForGeneratedClass->getValue();
         }
-        throw new InvalidSchemaClassNameForGeneratedClassException();
+
+        $generatedClassName = $this->getAppClass();
+        if ($generatedClassName === '') {
+            throw new InvalidSchemaClassNameForGeneratedClassException();
+        }
+        $generatedClassName = explode('\\', $generatedClassName);
+        $generatedClassName = $generatedClassName[count($generatedClassName) - 1];
+        return "Generated{$generatedClassName}";
     }
 
     /**

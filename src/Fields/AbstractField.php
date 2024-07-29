@@ -19,15 +19,6 @@ abstract class AbstractField
     protected FieldLabelValue $label;
     protected FieldCustomTypeValue $customType;
 
-    protected BooleanValue $showInCreateView;
-    protected BooleanValue $editInCreateView;
-    protected BooleanValue $hideInCreateView;
-    protected BooleanValue $dataInCreateView;
-    protected BooleanValue $showInUpdateView;
-    protected BooleanValue $editInUpdateView;
-    protected BooleanValue $hideInUpdateView;
-    protected BooleanValue $dataInUpdateView;
-
     protected $configuredViews = [];
 
     protected $defaultValue = [];
@@ -42,15 +33,6 @@ abstract class AbstractField
         $this->column = new FieldColumnValue($column, $this->name->getValue());
         $this->label = new FieldLabelValue('');
         $this->customType = new FieldCustomTypeValue(static::TYPE);
-
-        $this->showInCreateView = new BooleanValue(false);
-        $this->showInUpdateView = new BooleanValue(false);
-        $this->hideInCreateView = new BooleanValue(false);
-        $this->hideInUpdateView = new BooleanValue(false);
-        $this->editInCreateView = new BooleanValue(false);
-        $this->editInUpdateView = new BooleanValue(false);
-        $this->dataInCreateView = new BooleanValue(false);
-        $this->dataInUpdateView = new BooleanValue(false);
     }
 
     final public function getName(): string
@@ -243,30 +225,6 @@ abstract class AbstractField
     public function isDataInUpdateView(): bool
     {
         return $this->dataInUpdateView->getValue();
-    }
-
-    public function getModeInCreateView(): string
-    {
-        if ($this->hasViewConfigured('create')) {
-            return $this->configuredViews['create']->getMode();
-        }
-        if ($this->isEditableInCreateView()) return 'edit';
-        if ($this->isVisibleInCreateView()) return 'read';
-        if ($this->isHiddenInCreateView()) return 'hide';
-        if ($this->isDataInCreateView()) return 'data';
-        return 'data';
-    }
-
-    public function getModeInUpdateView(): string
-    {
-        if ($this->hasViewConfigured('edit')) {
-            return $this->configuredViews['edit']->getMode();
-        }
-        if ($this->isEditableInUpdateView()) return 'edit';
-        if ($this->isVisibleInUpdateView()) return 'read';
-        if ($this->isHiddenInUpdateView()) return 'hide';
-        if ($this->isDataInUpdateView()) return 'data';
-        return 'data';
     }
 
     public function configureView(FieldViewConfig $config): static

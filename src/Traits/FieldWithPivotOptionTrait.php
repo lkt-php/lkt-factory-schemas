@@ -17,12 +17,4 @@ trait FieldWithPivotOptionTrait
         $this->pivotComponent = new ComponentValue($component);
         return $this;
     }
-
-    final public function getPivotComponent(): string
-    {
-        if ($this->pivotComponent instanceof ComponentValue) {
-            return $this->pivotComponent->getValue();
-        }
-        return '';
-    }
 }

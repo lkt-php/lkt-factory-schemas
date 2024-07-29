@@ -2,6 +2,7 @@
 
 namespace Lkt\Factory\Schemas;
 
+use Lkt\Factory\Instantiator\Instantiator;
 use Lkt\Factory\Schemas\ComputedFields\AbstractComputedField;
 use Lkt\Factory\Schemas\CRUDs\AbstractCRUD;
 use Lkt\Factory\Schemas\CRUDs\CreateHandler;
@@ -22,6 +23,7 @@ use Lkt\Factory\Schemas\Fields\IntegerField;
 use Lkt\Factory\Schemas\Fields\MethodGetterField;
 use Lkt\Factory\Schemas\Fields\PivotField;
 use Lkt\Factory\Schemas\Fields\PivotLeftIdField;
+use Lkt\Factory\Schemas\Fields\PivotPositionField;
 use Lkt\Factory\Schemas\Fields\PivotRightIdField;
 use Lkt\Factory\Schemas\Fields\RelatedField;
 use Lkt\Factory\Schemas\Fields\RelatedKeysField;
@@ -31,6 +33,7 @@ use Lkt\Factory\Schemas\Fields\StringField;
 use Lkt\Factory\Schemas\Values\ComponentValue;
 use Lkt\Factory\Schemas\Values\TableValue;
 use Lkt\Factory\Schemas\Views\Layouts\SchemaLayout;
+use Lkt\QueryBuilding\Query;
 use function Lkt\Tools\Arrays\getArrayFirstPosition;
 
 final class Schema
@@ -405,6 +408,24 @@ final class Schema
         });
     }
 
+    public function getPivotLeftIdField(): PivotLeftIdField
+    {
+        $r = array_values(array_filter($this->getFields(), function (AbstractField $field) {
+            return $field instanceof PivotLeftIdField;
+        }));
+
+        return reset($r);
+    }
+
+    public function getPivotRightIdField(): PivotRightIdField
+    {
+        $r = array_values(array_filter($this->getFields(), function (AbstractField $field) {
+            return $field instanceof PivotRightIdField;
+        }));
+
+        return reset($r);
+    }
+
     /**
      * @return AbstractField[]
      */
@@ -697,6 +718,17 @@ final class Schema
         return null;
     }
 
+    public function getOnePositionField(): ?AbstractField
+    {
+        /** @var AbstractField[] $fields */
+        $fields = $this->getFields();
+        $r = array_values(array_filter($fields, function ($field) {
+            return $field instanceof PivotPositionField;
+        }));
+
+        return reset($r);
+    }
+
     /**
      * @param string $component
      * @param bool $matchOne
@@ -858,8 +890,12 @@ final class Schema
         foreach ($fields as $field) {
             $cfg = $field->getViewConfig($view);
             $relatedComponent = '';
-            if ($field instanceof ForeignKeysField || $field instanceof ForeignKeyField || $field instanceof RelatedField) {
+            $pivotComponent = '';
+            if ($field instanceof ForeignKeysField || $field instanceof ForeignKeyField || $field instanceof RelatedField || $field instanceof PivotField) {
                 $relatedComponent = $field->getComponent();
+            }
+            if ($field instanceof PivotField) {
+                $pivotComponent = $field->getPivotComponent();
             }
             $r[] = [
                 'key' => $field instanceof MethodGetterField ? $field->getColumn() : $field->getName(),
@@ -867,6 +903,7 @@ final class Schema
                 'type' => $cfg->getDisplayComponent(),
                 'mode' => $cfg->getMode(),
                 'relatedComponent' => $relatedComponent,
+                'pivotComponent' => $pivotComponent,
                 'i18nOptions' => $field instanceof StringChoiceField ? $field->getI18nViewOptions() : '',
             ];
         }
@@ -912,5 +949,16 @@ final class Schema
     {
         static::$stack[$this->getComponent()] = $this;
         return $this;
+    }
+
+    public function getItemInstance($id = null)
+    {
+        return Instantiator::make($this->getComponent(), $id);
+    }
+
+    public function getQueryBuilder(): Query
+    {
+        list($queryBuilder) = Instantiator::getQueryCaller($this->getComponent());
+        return $queryBuilder;
     }
 }
