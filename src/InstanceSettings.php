@@ -205,7 +205,14 @@ final class InstanceSettings
         if ($this->queryCallerClassName instanceof StringValue) {
             return $this->queryCallerClassName->getValue();
         }
-        return '';
+
+        $generatedClassName = $this->getAppClass();
+        if ($generatedClassName === '') {
+            throw new InvalidSchemaClassNameForGeneratedClassException();
+        }
+        $generatedClassName = explode('\\', $generatedClassName);
+        $generatedClassName = $generatedClassName[count($generatedClassName) - 1];
+        return "{$generatedClassName}QueryBuilder";
     }
 
     /**
@@ -216,24 +223,25 @@ final class InstanceSettings
         if ($this->whereClassName instanceof StringValue) {
             return $this->whereClassName->getValue();
         }
-        return '';
+
+        $generatedClassName = $this->getAppClass();
+        if ($generatedClassName === '') {
+            throw new InvalidSchemaClassNameForGeneratedClassException();
+        }
+        $generatedClassName = explode('\\', $generatedClassName);
+        $generatedClassName = $generatedClassName[count($generatedClassName) - 1];
+        return "{$generatedClassName}Where";
     }
 
     public function getQueryCallerFQDN(): string
     {
-        $r = [$this->getNamespaceForGeneratedClass()];
-        if ($this->queryCallerClassName instanceof StringValue) {
-            $r[] = $this->queryCallerClassName->getValue();
-        }
+        $r = [$this->getNamespaceForGeneratedClass(), $this->getQueryCallerClassName()];
         return implode('\\', $r);
     }
 
     public function getWhereFQDN(): string
     {
-        $r = [$this->getNamespaceForGeneratedClass()];
-        if ($this->whereClassName instanceof StringValue) {
-            $r[] = $this->whereClassName->getValue();
-        }
+        $r = [$this->getNamespaceForGeneratedClass(), $this->getWhereClassName()];
         return implode('\\', $r);
     }
 
