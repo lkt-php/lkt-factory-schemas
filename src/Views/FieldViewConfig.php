@@ -9,6 +9,8 @@ class FieldViewConfig
     protected string $type = '';
     protected array $requiredPerms = [];
 
+    protected bool $multiple = false;
+
     public function __construct(string $name, string $mode = 'read', string $type = 'text')
     {
         $this->name = $name;
@@ -55,5 +57,16 @@ class FieldViewConfig
     {
         $this->requiredPerms = $perms;
         return $this;
+    }
+
+    public function setIsMultiple(bool $multiple): static
+    {
+        $this->multiple = $multiple;
+        return $this;
+    }
+
+    public function isMultiple(): bool
+    {
+        return $this->multiple;
     }
 }

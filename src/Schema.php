@@ -905,6 +905,7 @@ final class Schema
                 'relatedComponent' => $relatedComponent,
                 'pivotComponent' => $pivotComponent,
                 'i18nOptions' => $field instanceof StringChoiceField ? $field->getI18nViewOptions() : '',
+                'multiple' => $cfg->isMultiple(),
             ];
         }
 
