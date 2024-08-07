@@ -101,6 +101,13 @@ abstract class AbstractField
         return 'get'. ucfirst($this->getName()) . 'Data';
     }
 
+    public function getGetterForChecker(): string
+    {
+        if ($this instanceof BooleanField) return $this->getName();
+        if ($this instanceof ForeignKeyField) return 'has'. ucfirst($this->getName());
+        return 'has'. ucfirst($this->getName());
+    }
+
     public function setLabel(string $label): static
     {
         $this->label = new FieldLabelValue($label);

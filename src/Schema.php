@@ -410,6 +410,16 @@ final class Schema
         });
     }
 
+    /**
+     * @return AbstractField[]
+     */
+    public function getMandatoryFields(): array
+    {
+        return array_filter($this->getAllFields(), function (AbstractField $field) {
+            return method_exists($field, 'isMandatory') ? $field->isMandatory() : false;
+        });
+    }
+
     public function getPivotLeftIdField(): PivotLeftIdField
     {
         $r = array_values(array_filter($this->getFields(), function (AbstractField $field) {
