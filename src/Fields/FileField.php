@@ -15,6 +15,8 @@ class FileField extends AbstractField
     protected ?FieldFilePathValue $storePath = null;
     protected ?FieldFilePathValue $publicPath = null;
 
+    protected float|null $httpCacheDurationInSeconds = null;
+
 
     /**
      * @throws InvalidFieldFilePathException
@@ -57,5 +59,45 @@ class FileField extends AbstractField
     final public function hasPublicPath(): bool
     {
         return $this->getPublicPath() !== '';
+    }
+
+    final public function hasHttpCacheDurationInSeconds(): bool
+    {
+        return $this->httpCacheDurationInSeconds !== null;
+    }
+
+    final public function getHttpCacheDurationInSeconds(): float
+    {
+        return (float)$this->httpCacheDurationInSeconds;
+    }
+
+    final public function setHttpCacheDurationInSeconds(float $seconds): static
+    {
+        $this->httpCacheDurationInSeconds = $seconds;
+        return $this;
+    }
+
+    final public function setHttpCacheDurationInSecondsToOneDay(): static
+    {
+        $this->httpCacheDurationInSeconds = 86400;
+        return $this;
+    }
+
+    final public function setHttpCacheDurationInSecondsToOneWeek(): static
+    {
+        $this->httpCacheDurationInSeconds = 604800;
+        return $this;
+    }
+
+    final public function setHttpCacheDurationInSecondsToOneMonth(): static
+    {
+        $this->httpCacheDurationInSeconds = 2419200;
+        return $this;
+    }
+
+    final public function setHttpCacheDurationInSecondsToOneYear(): static
+    {
+        $this->httpCacheDurationInSeconds = 31536000;
+        return $this;
     }
 }
