@@ -45,6 +45,8 @@ final class Schema
     protected array $fieldsForRelatedMode = [];
     protected array $excludeFieldFromViewFeed = [];
 
+    protected string $slugPattern = '';
+
     /**
      * @return Schema[]
      */
@@ -897,6 +899,8 @@ final class Schema
             if ($field instanceof PivotField) {
                 $pivotComponent = $field->getPivotComponent();
             }
+            $mandatory = false;
+            if (method_exists($field, 'isMandatory')) $mandatory = $field->isMandatory();
             $r[] = [
                 'key' => $field instanceof MethodGetterField ? $field->getColumn() : $field->getName(),
                 'label' => $field->getLabel(),
@@ -906,6 +910,7 @@ final class Schema
                 'pivotComponent' => $pivotComponent,
                 'i18nOptions' => $field instanceof StringChoiceField ? $field->getI18nViewOptions() : '',
                 'multiple' => $cfg->isMultiple(),
+                'mandatory' => $mandatory,
             ];
         }
 
@@ -961,5 +966,16 @@ final class Schema
     {
         list($queryBuilder) = Instantiator::getQueryCaller($this->getComponent());
         return $queryBuilder;
+    }
+
+    public function setSlugPattern(string $pattern): static
+    {
+        $this->slugPattern = $pattern;
+        return $this;
+    }
+
+    public function getSlugPattern(): string
+    {
+        return $this->slugPattern;
     }
 }
