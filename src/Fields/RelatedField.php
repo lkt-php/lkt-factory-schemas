@@ -33,4 +33,17 @@ class RelatedField extends AbstractField
     {
         return $this->getGetterForPrimitiveValue() . 'QueryCaller';
     }
+
+    protected bool $returnsEmptyOneInSingleMode = false;
+
+    public function setReturnsEmptyOneInSingleMode(bool $enable = true): static
+    {
+        $this->returnsEmptyOneInSingleMode = $enable;
+        return $this;
+    }
+
+    public function hasToReturnsEmptyOneInSingleMode(): bool
+    {
+        return $this->returnsEmptyOneInSingleMode;
+    }
 }
