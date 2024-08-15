@@ -853,7 +853,7 @@ final class Schema
         });
     }
 
-    public function setFieldsForRelatedMode(string $value, string $label, array $additionalFields): static
+    public function setFieldsForRelatedMode(string $value, string $label, array $additionalFields = []): static
     {
         $this->fieldsForRelatedMode = [$value, $label, $additionalFields];
         return $this;
