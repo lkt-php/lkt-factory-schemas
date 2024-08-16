@@ -145,6 +145,11 @@ final class Schema
         return new static($table, $component);
     }
 
+    public static function local(string $component): self
+    {
+        return new static('_', $component);
+    }
+
 
     public static function module(string $component): self
     {

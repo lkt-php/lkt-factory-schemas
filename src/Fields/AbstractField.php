@@ -23,6 +23,8 @@ abstract class AbstractField
 
     protected $defaultValue = [];
 
+    protected $onEqualOverrideWithDefaultValue = [];
+
 
     /**
      * @throws InvalidFieldNameException
@@ -91,6 +93,7 @@ abstract class AbstractField
         if ($this instanceof BooleanField) return $this->getName();
         if ($this instanceof ForeignKeyField) return 'get'. ucfirst($this->getName()) . 'Id';
         if ($this instanceof ForeignKeysField) return 'get'. ucfirst($this->getName()) . 'Ids';
+        if ($this instanceof MethodGetterField) return $this->getName();
         return 'get'. ucfirst($this->getName());
     }
 
@@ -98,6 +101,7 @@ abstract class AbstractField
     {
         if ($this instanceof BooleanField) return $this->getName();
         if ($this instanceof ForeignKeyField) return 'get'. ucfirst($this->getName());
+        if ($this instanceof MethodGetterField) return $this->getName();
         return 'get'. ucfirst($this->getName()) . 'Data';
     }
 
@@ -274,5 +278,22 @@ abstract class AbstractField
         }
 
         return $this->defaultValue[0];
+    }
+
+    public function overrideWithDefaultValueIfEqualTo($value): static
+    {
+        $this->onEqualOverrideWithDefaultValue[] = $value;
+        return $this;
+    }
+
+    public function ensureDefaultValue($value): mixed
+    {
+        foreach ($this->onEqualOverrideWithDefaultValue as $v) {
+            if ($value === $v) {
+                return $this->defaultValue[0];
+            }
+        }
+
+        return $value;
     }
 }
