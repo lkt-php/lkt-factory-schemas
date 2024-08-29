@@ -14,10 +14,7 @@ final class FieldWhereValue
             $value = [];
         }
 
-        if ($value instanceof Where) {
-            $value = [$value->whereConstraintsToString()];
-        }
-        elseif (!is_array($value)) {
+        if (!is_array($value)) {
             $value = [$value];
         }
         $this->value = $value;
@@ -25,6 +22,12 @@ final class FieldWhereValue
 
     public function getValue(): array
     {
-        return $this->value;
+        $r = [];
+        foreach ($this->value as $v) {
+            if ($v instanceof Where) {
+                $r[] = $v->whereConstraintsToString();
+            }
+        }
+        return $r;
     }
 }
