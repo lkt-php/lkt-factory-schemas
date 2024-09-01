@@ -2,11 +2,7 @@
 
 namespace Lkt\Factory\Schemas\Fields;
 
-use Lkt\Factory\Schemas\Traits\FieldWithNullOptionTrait;
-
-class EmailField extends AbstractField
+class EmailField extends StringField
 {
     const TYPE = 'email';
-
-    use FieldWithNullOptionTrait;
 }

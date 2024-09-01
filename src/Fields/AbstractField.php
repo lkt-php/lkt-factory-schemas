@@ -25,6 +25,8 @@ abstract class AbstractField
 
     protected $onEqualOverrideWithDefaultValue = [];
 
+    protected array $customViewName = [];
+
 
     /**
      * @throws InvalidFieldNameException
@@ -295,5 +297,18 @@ abstract class AbstractField
         }
 
         return $value;
+    }
+
+    public function setCustomViewName(string $view, string $name): static
+    {
+        $this->customViewName[$view] = $name;
+        return $this;
+    }
+
+    public function getCustomViewName(string $view): string
+    {
+        if ($this->customViewName[$view] && $this->customViewName[$view] !== '') return $this->customViewName[$view];
+        if ($this instanceof MethodGetterField) return $this->getColumn();
+        return $this->getName();
     }
 }
