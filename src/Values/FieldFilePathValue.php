@@ -2,27 +2,22 @@
 
 namespace Lkt\Factory\Schemas\Values;
 
-use Lkt\Factory\Schemas\Exceptions\InvalidFieldFilePathException;
-
 final class FieldFilePathValue
 {
-    private string $value;
+    private mixed $value;
 
     /**
-     * @param string $value
-     * @throws InvalidFieldFilePathException
+     * @param string|callable $value
      */
-    public function __construct(string $value)
+    public function __construct(string|callable $value)
     {
-        if (!$value) {
-            $value = '';
-//            throw new InvalidFieldFilePathException();
-        }
+        if (!$value) $value = '';
         $this->value = $value;
     }
 
-    public function getValue(): string
+    public function getValue($instance = null): string
     {
+        if (is_callable($this->value)) return call_user_func($this->value, $instance);
         return $this->value;
     }
 }

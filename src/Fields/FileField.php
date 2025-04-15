@@ -21,16 +21,16 @@ class FileField extends AbstractField
     /**
      * @throws InvalidFieldFilePathException
      */
-    final public function setStorePath(string $path): self
+    final public function setStorePath(string|callable $path): self
     {
         $this->storePath = new FieldFilePathValue($path);
         return $this;
     }
 
-    final public function getStorePath(): string
+    final public function getStorePath($instance = null): string
     {
         if ($this->storePath instanceof FieldFilePathValue) {
-            return $this->storePath->getValue();
+            return $this->storePath->getValue($instance);
         }
         return '';
     }
@@ -39,16 +39,16 @@ class FileField extends AbstractField
     /**
      * @throws InvalidFieldFilePathException
      */
-    final public function setPublicPath(string $path): self
+    final public function setPublicPath(string|callable $path): self
     {
         $this->publicPath = new FieldFilePathValue($path);
         return $this;
     }
 
-    final public function getPublicPath(): string
+    final public function getPublicPath($instance = null): string
     {
         if ($this->publicPath instanceof FieldFilePathValue) {
-            return $this->publicPath->getValue();
+            return $this->publicPath->getValue($instance);
         }
         return '';
     }
