@@ -56,9 +56,9 @@ class FileField extends AbstractField
     /**
      * @return bool
      */
-    final public function hasPublicPath(): bool
+    final public function hasPublicPath($instance = null): bool
     {
-        return $this->getPublicPath() !== '';
+        return $this->getPublicPath($instance) !== '';
     }
 
     final public function hasHttpCacheDurationInSeconds(): bool
