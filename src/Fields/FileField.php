@@ -5,6 +5,7 @@ namespace Lkt\Factory\Schemas\Fields;
 use Lkt\Factory\Schemas\Exceptions\InvalidFieldFilePathException;
 use Lkt\Factory\Schemas\Traits\FieldWithNullOptionTrait;
 use Lkt\Factory\Schemas\Values\FieldFilePathValue;
+use Lkt\MIME;
 
 class FileField extends AbstractField
 {
@@ -15,7 +16,15 @@ class FileField extends AbstractField
     protected ?FieldFilePathValue $storePath = null;
     protected ?FieldFilePathValue $publicPath = null;
 
+    protected string|int|float|null $maxFileSize = null;
+
     protected float|null $httpCacheDurationInSeconds = null;
+
+    /**
+     * @var MIME[]
+     */
+    protected array $supportedFormats = [];
+    protected string|null $fileName = null;
 
 
     /**
@@ -99,5 +108,46 @@ class FileField extends AbstractField
     {
         $this->httpCacheDurationInSeconds = 31536000;
         return $this;
+    }
+
+    final public function setMaxFileSize(string|int|float|null $maxFileSize): static
+    {
+        $this->maxFileSize = $maxFileSize;
+        return $this;
+    }
+
+    final public function getMaxFileSize(): string|int|float
+    {
+        if (is_null($this->maxFileSize)) return '10M';
+        return $this->maxFileSize;
+    }
+
+    /**
+     * @param MIME[] $formats
+     * @return $this
+     */
+    final public function setSupportedFormats(array $formats): static
+    {
+        $this->supportedFormats = $formats;
+        return $this;
+    }
+
+    /**
+     * @return MIME[]
+     */
+    final public function getSupportedFormats(): array
+    {
+        return $this->supportedFormats;
+    }
+
+    final public function setFileName(string $name): static
+    {
+        $this->fileName = $name;
+        return $this;
+    }
+
+    final public function getFileName(): string|null
+    {
+        return $this->fileName;
     }
 }
