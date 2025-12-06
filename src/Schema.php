@@ -64,7 +64,7 @@ final class Schema
      * @param Schema $schema
      * @return void
      */
-    public static function add(Schema $schema)
+    public static function add(Schema $schema): void
     {
         $code = $schema->getComponent();
         self::$stack[$code] = $schema;
