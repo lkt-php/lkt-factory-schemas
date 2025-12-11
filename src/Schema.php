@@ -47,6 +47,8 @@ final class Schema
 
     protected string $slugPattern = '';
 
+    protected array $complexPrimaryKey = [];
+
     /**
      * @return Schema[]
      */
@@ -650,6 +652,19 @@ final class Schema
             return $this->idFields;
         }
 
+        if ($this->hasComplexPrimaryKey()) {
+            $fields = array_filter($stack, function (AbstractField $field) {
+                return in_array($field->getName(), $this->complexPrimaryKey);
+            });
+
+            $this->idColumns = array_keys($fields);
+            $this->idFields = array_values($fields);
+            $this->idColumnsInTable = array_map(function ($field) {
+                return $field->getColumn();
+            }, $fields);
+            return $this->idFields;
+        }
+
         $fields = array_filter($stack, function (AbstractField $field) {
             return $field instanceof IdField;
         });
@@ -660,6 +675,31 @@ final class Schema
             return $field->getColumn();
         }, $fields);
         return $this->idFields;
+    }
+
+    public function hasComplexPrimaryKey(): bool
+    {
+        return count($this->complexPrimaryKey) > 1;
+    }
+
+    public function setComplexPrimaryKey(array $fieldNames): static
+    {
+        $this->complexPrimaryKey = $fieldNames;
+        return $this;
+    }
+
+    /**
+     * @return AbstractField[]
+     * @throws InvalidComponentException
+     * @throws SchemaNotDefinedException
+     */
+    public function getComplexPrimaryKeyFields(): array
+    {
+        if ($this->hasComplexPrimaryKey()) {
+            $this->getIdentifiers();
+            return $this->idFields;
+        }
+        return [];
     }
 
     /**
@@ -805,6 +845,11 @@ final class Schema
     }
 
     final public function setIdField(string $name, string $column = ''): self
+    {
+        return $this->addField(IdField::define($name, $column));
+    }
+
+    final public function setMultipleIdField(string $name, string $column = ''): self
     {
         return $this->addField(IdField::define($name, $column));
     }
