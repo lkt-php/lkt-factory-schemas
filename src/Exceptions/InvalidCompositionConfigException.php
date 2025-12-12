@@ -16,6 +16,6 @@ class InvalidCompositionConfigException extends Exception
 
     public static function stringFieldNamePointingToNonRelatedField(string $component, string $fieldName): static
     {
-        return new static("InvalidCompositionConfigException: '{$component}' component doesn't have a related field named '{$fieldName}'");
+        return new static("InvalidCompositionConfigException: '{$component}' component doesn't have a related/foreign key field named '{$fieldName}'");
     }
 }
