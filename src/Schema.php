@@ -517,7 +517,7 @@ final class Schema
      * @throws InvalidComponentException
      * @throws SchemaNotDefinedException
      */
-    public function getField(string $field): ?AbstractField
+    public function getField(string $field, bool $searchComposed = true): ?AbstractField
     {
         $haystack = $this->getAllFields();
         if (isset($haystack[$field])) return $haystack[$field];
@@ -545,6 +545,11 @@ final class Schema
             if (isset($haystack[$keyWithoutIds]) && $haystack[$keyWithoutIds] instanceof ForeignKeysField) {
                 return $haystack[$keyWithoutIds];
             }
+        }
+
+        if ($searchComposed) {
+            $composedSchema = CompositionSchema::get($this->getComponent());
+            return $composedSchema?->getField($field);
         }
         return null;
     }
