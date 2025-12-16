@@ -7,6 +7,10 @@ use Lkt\Factory\Schemas\Fields\AbstractField;
 use Lkt\Factory\Schemas\Fields\RelatedField;
 use Lkt\Factory\Schemas\ValueObjects\CompositionContent;
 
+/**
+ *
+ * @deprecated
+ */
 class CompositionSchema
 {
     /** @var CompositionSchema[]  */
@@ -21,12 +25,23 @@ class CompositionSchema
     protected RelatedField $relatedField;
     protected string $relatedFieldName = '';
 
+    /**
+     * @param string $paramName
+     * @param string $extractParamValueFromFieldName
+     * @return $this
+     * @deprecated
+     */
     public function setCompositionValue(string $paramName, string $extractParamValueFromFieldName): static
     {
         $this->compositionValues[$paramName] = $extractParamValueFromFieldName;
         return $this;
     }
 
+    /**
+     * @param string $paramName
+     * @return mixed
+     * @deprecated
+     */
     public function getCompositionValue(string $paramName): mixed
     {
         return $this->compositionValues[$paramName];

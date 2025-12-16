@@ -3,6 +3,7 @@
 namespace Lkt\Factory\Schemas\Fields;
 
 use Lkt\Factory\Schemas\Traits\FieldWithComponentOptionTrait;
+use Lkt\Factory\Schemas\Traits\FieldWithCompositionOptionTrait;
 use Lkt\Factory\Schemas\Traits\FieldWithMultipleReferencesTrait;
 use Lkt\Factory\Schemas\Traits\FieldWithOrderOptionTrait;
 use Lkt\Factory\Schemas\Traits\FieldWithPaginationOptionTrait;
@@ -22,7 +23,8 @@ class RelatedField extends AbstractField
         FieldWithSingleModeOptionTrait,
         FieldWithMultipleReferencesTrait,
         FieldWithPaginationOptionTrait,
-        FieldWithRelatedComponentFeedsTrait;
+        FieldWithRelatedComponentFeedsTrait,
+        FieldWithCompositionOptionTrait;
 
     public static function defineRelation(string $component, string $name, string $column = ''): static
     {

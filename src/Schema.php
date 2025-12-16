@@ -30,6 +30,7 @@ use Lkt\Factory\Schemas\Fields\RelatedKeysField;
 use Lkt\Factory\Schemas\Fields\RelatedKeysMergeField;
 use Lkt\Factory\Schemas\Fields\StringChoiceField;
 use Lkt\Factory\Schemas\Fields\StringField;
+use Lkt\Factory\Schemas\Traits\FieldWithCompositionOptionTrait;
 use Lkt\Factory\Schemas\Values\ComponentValue;
 use Lkt\Factory\Schemas\Values\TableValue;
 use Lkt\Factory\Schemas\Views\Layouts\SchemaLayout;
@@ -548,10 +549,14 @@ final class Schema
         }
 
         if ($searchComposed) {
-            $composedSchema = CompositionSchema::get($this->getComponent());
-            return $composedSchema?->getField($field);
+            return $this->getComposedField($field);
         }
         return null;
+    }
+
+    public function hasField(string $fieldName): bool
+    {
+        return $this->getField($fieldName) !== null;
     }
 
     public function getFeedField(string $field): ?AbstractField
@@ -629,6 +634,88 @@ final class Schema
     {
         $r = $this->getField($field);
         if ($r instanceof PivotField) return $r;
+        return null;
+    }
+
+    /**
+     * @return FieldWithCompositionOptionTrait[]
+     */
+    public function getCompositionFields(): array
+    {
+        return array_filter($this->getFields(), function ($field) {
+            if ($field instanceof RelatedField || $field instanceof ForeignKeyField) {
+                return $field->hasCompositionContent();
+            }
+            return false;
+        });
+    }
+
+    public function getCompositionField(string $fieldName): null|ForeignKeyField|RelatedField
+    {
+        $field = $this->getField($fieldName);
+        if (!$field instanceof RelatedField && !$field instanceof ForeignKeyField) return null;
+        if (!$field->hasCompositionContent()) return null;
+        return $field;
+    }
+
+    public function getCompositionValueFields(string $fieldName): array
+    {
+        $field = $this->getField($fieldName);
+
+        if (!$field instanceof RelatedField && !$field instanceof ForeignKeyField) return [];
+        if (!$field->hasCompositionContent()) return [];
+
+        $r = [];
+        foreach ($field->getCompositionValues() as $paramName => $compositionValue) {
+            $r[$paramName] = $this->getField($compositionValue);
+        }
+
+        return $r;
+    }
+
+    public function getFieldComposedFields(AbstractField $field): array
+    {
+        if (!$field instanceof RelatedField && !$field instanceof ForeignKeyField) {
+            return [];
+        }
+
+        $r = [];
+
+        $schema = Schema::get($field->getComponent());
+        foreach ($field->getCompositionContent() as $fieldName => $field) {
+            $r[$fieldName] = $schema?->getField($field);
+        }
+
+        return $r;
+    }
+
+    public function getComposedFields(): array
+    {
+        $r = [];
+        foreach ($this->getCompositionFields() as $compositionField) {
+            $r = array_merge($r, $this->getFieldComposedFields($compositionField));
+        }
+
+        return $r;
+    }
+
+    public function getComposedField(string $fieldName): ?AbstractField
+    {
+        return array_filter($this->getComposedFields(), function ($field) use ($fieldName) {
+            return $field?->getName() === $fieldName;
+        })[0];
+    }
+
+    public function getCompositionFieldComposingThisField(string $fieldName): ?FieldWithCompositionOptionTrait
+    {
+        foreach ($this->getCompositionFields() as $compositionField) {
+            foreach ($compositionField->getCompositionContent() as $compositionContent) {
+                if (is_array($compositionContent) && in_array($fieldName, $compositionContent)) {
+                    return $compositionField;
+                }
+            }
+        }
+
         return null;
     }
 
