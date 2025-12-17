@@ -673,6 +673,21 @@ final class Schema
         return $r;
     }
 
+    public function getAllCompositionValueFields(): array
+    {
+        $r = [];
+        foreach ($this->getCompositionFields() as $field) {
+            if (!$field instanceof RelatedField && !$field instanceof ForeignKeyField) continue;
+            if (!$field->hasCompositionContent()) continue;
+
+            foreach ($field->getCompositionValues() as $paramName => $compositionValue) {
+                $r[$paramName] = $this->getField($compositionValue);
+            }
+        }
+
+        return $r;
+    }
+
     public function getFieldComposedFields(AbstractField $field): array
     {
         if (!$field instanceof RelatedField && !$field instanceof ForeignKeyField) {
@@ -682,10 +697,18 @@ final class Schema
         $r = [];
 
         $schema = Schema::get($field->getComponent());
-        foreach ($field->getCompositionContent() as $fieldName => $field) {
-            $r[$fieldName] = $schema?->getField($field);
-        }
 
+        foreach ($field->getCompositionContent() as $fieldName => $composedFieldName) {
+            $composedField = $schema?->getField($composedFieldName);
+            if (!$composedField) {
+
+                $nestedCompositionField = $schema->getCompositionFieldComposingThisField($composedFieldName);
+                $nestedComposedSchema = Schema::get($nestedCompositionField->getComponent());
+                $composedField = $nestedComposedSchema->getField($composedFieldName);
+            }
+
+            $r[$fieldName] = $composedField;
+        }
         return $r;
     }
 
@@ -706,13 +729,12 @@ final class Schema
         })[0];
     }
 
-    public function getCompositionFieldComposingThisField(string $fieldName): ?FieldWithCompositionOptionTrait
+    public function getCompositionFieldComposingThisField(string $fieldName): null|RelatedField|ForeignKeyField
     {
         foreach ($this->getCompositionFields() as $compositionField) {
-            foreach ($compositionField->getCompositionContent() as $compositionContent) {
-                if (is_array($compositionContent) && in_array($fieldName, $compositionContent)) {
-                    return $compositionField;
-                }
+            $compositionContent = $compositionField->getCompositionContent();
+            if (is_array($compositionContent) && in_array($fieldName, $compositionContent)) {
+                return $compositionField;
             }
         }
 
