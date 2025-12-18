@@ -1095,18 +1095,37 @@ final class Schema
         });
     }
 
+    /**
+     * @param string $value
+     * @param string $label
+     * @param array $additionalFields
+     * @return $this
+     * @deprecated
+     */
     public function setFieldsForRelatedMode(string $value, string $label, array $additionalFields = []): static
     {
         $this->fieldsForRelatedMode = [$value, $label, $additionalFields];
         return $this;
     }
 
+    /**
+     * @return AbstractField|null
+     * @throws InvalidComponentException
+     * @throws SchemaNotDefinedException
+     * @deprecated
+     */
     public function getRelatedModeValueField(): ?AbstractField
     {
         if (isset($this->fieldsForRelatedMode[0])) return $this->getField($this->fieldsForRelatedMode[0]);
         return null;
     }
 
+    /**
+     * @return AbstractField|null
+     * @throws InvalidComponentException
+     * @throws SchemaNotDefinedException
+     * @deprecated
+     */
     public function getRelatedModeLabelField(): ?AbstractField
     {
         if (isset($this->fieldsForRelatedMode[1])) return $this->getField($this->fieldsForRelatedMode[1]);
@@ -1117,6 +1136,7 @@ final class Schema
      * @return AbstractField[]
      * @throws InvalidComponentException
      * @throws SchemaNotDefinedException
+     * @deprecated
      */
     public function getRelatedModeAdditionalFields(): array
     {

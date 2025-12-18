@@ -44,4 +44,14 @@ class AccessPolicy
     {
         return in_array($field->getName(), $this->availableCompositionFields);
     }
+
+    public function includesFieldName(string $field): bool
+    {
+        return in_array($field, $this->availableFields) || array_key_exists($field, $this->availableFields);
+    }
+
+    public function includesCompositionFieldName(string $field): bool
+    {
+        return in_array($field, $this->availableCompositionFields) || array_key_exists($field, $this->availableCompositionFields);
+    }
 }
