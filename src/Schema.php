@@ -226,6 +226,19 @@ final class Schema
         return $this->accessPolicies[$name];
     }
 
+    public function getAccessPolicyForRelationalField(string|AccessPolicyUsage|AccessPolicy $accessPolicy, RelatedField|ForeignKeyField|ForeignKeysField $field): ?AccessPolicy
+    {
+        if (is_string($accessPolicy)) $accessPolicy = $this->getAccessPolicy($accessPolicy);
+        elseif ($accessPolicy instanceof AccessPolicyUsage) $accessPolicy = $this->getAccessPolicy($accessPolicy->name);
+
+        $fieldAccessPolicy = $field->getAssociatedAccessPolicy($accessPolicy->name);
+        if ($fieldAccessPolicy) {
+            $associatedSchema = static::get($field->getComponent());
+            return $associatedSchema->getAccessPolicy($fieldAccessPolicy);
+        }
+        return null;
+    }
+
     public function setCountableField(string $fieldName): self
     {
         $this->countableField = $fieldName;
