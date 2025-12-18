@@ -2,6 +2,9 @@
 
 namespace Lkt\Factory\Schemas\Views;
 
+/**
+ * @deprecated
+ */
 class FieldViewConfig
 {
     protected string $name = '';

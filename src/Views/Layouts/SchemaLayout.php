@@ -2,6 +2,9 @@
 
 namespace Lkt\Factory\Schemas\Views\Layouts;
 
+/**
+ * @deprecated
+ */
 class SchemaLayout
 {
     protected string $name = '';

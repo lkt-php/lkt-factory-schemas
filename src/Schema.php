@@ -8,18 +8,28 @@ use Lkt\Factory\Schemas\CRUDs\AbstractCRUD;
 use Lkt\Factory\Schemas\CRUDs\CreateHandler;
 use Lkt\Factory\Schemas\CRUDs\DeleteHandler;
 use Lkt\Factory\Schemas\CRUDs\UpdateHandler;
+use Lkt\Factory\Schemas\Exceptions\DuplicatedAccessPolicyDefinitionException;
 use Lkt\Factory\Schemas\Exceptions\InvalidComponentException;
 use Lkt\Factory\Schemas\Exceptions\InvalidTableException;
 use Lkt\Factory\Schemas\Exceptions\SchemaNotDefinedException;
+use Lkt\Factory\Schemas\Exceptions\UndefinedAccessPolicyException;
 use Lkt\Factory\Schemas\Fields\AbstractField;
 use Lkt\Factory\Schemas\Fields\BooleanField;
 use Lkt\Factory\Schemas\Fields\ColorField;
+use Lkt\Factory\Schemas\Fields\ConcatField;
+use Lkt\Factory\Schemas\Fields\DateTimeField;
+use Lkt\Factory\Schemas\Fields\EmailField;
+use Lkt\Factory\Schemas\Fields\EncryptField;
 use Lkt\Factory\Schemas\Fields\FileField;
+use Lkt\Factory\Schemas\Fields\FloatField;
 use Lkt\Factory\Schemas\Fields\ForeignKeyField;
 use Lkt\Factory\Schemas\Fields\ForeignKeysField;
+use Lkt\Factory\Schemas\Fields\HTMLField;
 use Lkt\Factory\Schemas\Fields\IdField;
+use Lkt\Factory\Schemas\Fields\ImageField;
 use Lkt\Factory\Schemas\Fields\IntegerChoiceField;
 use Lkt\Factory\Schemas\Fields\IntegerField;
+use Lkt\Factory\Schemas\Fields\JSONField;
 use Lkt\Factory\Schemas\Fields\MethodGetterField;
 use Lkt\Factory\Schemas\Fields\PivotField;
 use Lkt\Factory\Schemas\Fields\PivotLeftIdField;
@@ -30,7 +40,11 @@ use Lkt\Factory\Schemas\Fields\RelatedKeysField;
 use Lkt\Factory\Schemas\Fields\RelatedKeysMergeField;
 use Lkt\Factory\Schemas\Fields\StringChoiceField;
 use Lkt\Factory\Schemas\Fields\StringField;
+use Lkt\Factory\Schemas\Fields\UnixTimeStampField;
+use Lkt\Factory\Schemas\Fields\UrlField;
+use Lkt\Factory\Schemas\Fields\ValueListField;
 use Lkt\Factory\Schemas\Traits\FieldWithCompositionOptionTrait;
+use Lkt\Factory\Schemas\ValueObjects\AccessPolicy;
 use Lkt\Factory\Schemas\Values\ComponentValue;
 use Lkt\Factory\Schemas\Values\TableValue;
 use Lkt\Factory\Schemas\Views\Layouts\SchemaLayout;
@@ -49,6 +63,9 @@ final class Schema
     protected string $slugPattern = '';
 
     protected array $complexPrimaryKey = [];
+
+    /** @var AccessPolicy[] */
+    protected array $accessPolicies = [];
 
     /**
      * @return Schema[]
@@ -128,7 +145,6 @@ final class Schema
 
     // Pivot exclusive data
     protected $pivot = false;
-//    protected $composition = [];
 
     /** @var InstanceSettings */
     protected $instanceSettings;
@@ -171,13 +187,6 @@ final class Schema
         return new static($table, $component, true);
     }
 
-
-//    public function composeWith(string $component, string $fieldConfig): self
-//    {
-//        $this->composition[$component] = $fieldConfig;
-//        return $this;
-//    }
-
     /**
      * @param string $table
      * @param string $component
@@ -190,6 +199,30 @@ final class Schema
         $this->table = new TableValue($table);
         $this->component = new ComponentValue($component);
         $this->pivot = $isPivot;
+    }
+
+    public function addAccessPolicy(string|AccessPolicy $policy, array $availableFields = [], array $availableCompositionFields = []): static
+    {
+        if (isset($this->accessPolicies[$policy])) {
+            throw DuplicatedAccessPolicyDefinitionException::getInstance($this->getComponent(), $policy);
+        }
+
+        if (is_string($policy)) {
+            $this->accessPolicies[$policy] = new AccessPolicy($policy, $availableFields, $availableCompositionFields);
+        } else {
+            $this->accessPolicies[$policy->name] = $policy;
+        }
+
+        return $this;
+    }
+
+    public function getAccessPolicy(string $name): AccessPolicy
+    {
+        if (!isset($this->accessPolicies[$name])) {
+            throw UndefinedAccessPolicyException::getInstance($this->getComponent(), $name);
+        }
+
+        return $this->accessPolicies[$name];
     }
 
     public function setCountableField(string $fieldName): self
@@ -338,7 +371,7 @@ final class Schema
     }
 
     /**
-     * @return AbstractField[]
+     * @return array<ForeignKeyField|ForeignKeysField|PivotField|RelatedField|RelatedKeysField|RelatedKeysMergeField|StringField|BooleanField|ColorField|JSONField|ConcatField|DateTimeField|EmailField|EncryptField|FileField|FloatField|IntegerField|HTMLField|IdField|ImageField|IntegerChoiceField|MethodGetterField|UnixTimeStampField|UrlField|ValueListField>
      */
     public function getFields(): array
     {
@@ -346,7 +379,7 @@ final class Schema
     }
 
     /**
-     * @return AbstractField[]
+     * @return array<ForeignKeyField|ForeignKeysField|PivotField|RelatedField|RelatedKeysField|RelatedKeysMergeField|StringField|BooleanField|ColorField|JSONField|ConcatField|DateTimeField|EmailField|EncryptField|FileField|FloatField|IntegerField|HTMLField|IdField|ImageField|IntegerChoiceField|MethodGetterField|UnixTimeStampField|UrlField|ValueListField>
      * @throws InvalidComponentException
      * @throws SchemaNotDefinedException
      */
@@ -383,7 +416,9 @@ final class Schema
     }
 
     /**
-     * @return AbstractField[]
+     * @return array<StringField|BooleanField|ColorField|JSONField|ConcatField|DateTimeField|EmailField|EncryptField|FileField|FloatField|IntegerField|HTMLField|IdField|ImageField|IntegerChoiceField|MethodGetterField|UnixTimeStampField|UrlField|ValueListField>
+     * @throws InvalidComponentException
+     * @throws SchemaNotDefinedException
      */
     public function getNonRelationalFields(): array
     {
@@ -401,7 +436,9 @@ final class Schema
     }
 
     /**
-     * @return AbstractField[]
+     * @return array<ForeignKeyField|ForeignKeysField|PivotField|RelatedField|RelatedKeysField|RelatedKeysMergeField>
+     * @throws InvalidComponentException
+     * @throws SchemaNotDefinedException
      */
     public function getRelationalFields(): array
     {
@@ -419,7 +456,9 @@ final class Schema
     }
 
     /**
-     * @return AbstractField[]
+     * @return array<ForeignKeyField|ForeignKeysField|PivotField|RelatedField|RelatedKeysField|RelatedKeysMergeField|StringField|BooleanField|ColorField|JSONField|ConcatField|DateTimeField|EmailField|EncryptField|FileField|FloatField|IntegerField|HTMLField|IdField|ImageField|IntegerChoiceField|MethodGetterField|UnixTimeStampField|UrlField|ValueListField>
+     * @throws InvalidComponentException
+     * @throws SchemaNotDefinedException
      */
     public function getMandatoryFields(): array
     {
@@ -447,7 +486,9 @@ final class Schema
     }
 
     /**
-     * @return AbstractField[]
+     * @return array<StringChoiceField|IntegerChoiceField>
+     * @throws InvalidComponentException
+     * @throws SchemaNotDefinedException
      */
     public function getChoiceFields(): array
     {
@@ -461,7 +502,9 @@ final class Schema
     }
 
     /**
-     * @return AbstractField[]
+     * @return array<StringChoiceField|IntegerChoiceField>
+     * @throws InvalidComponentException
+     * @throws SchemaNotDefinedException
      */
     public function getChoiceFieldsWithDefaultValue(): array
     {
@@ -514,7 +557,8 @@ final class Schema
 
     /**
      * @param string $field
-     * @return AbstractField|null
+     * @param bool $searchComposed
+     * @return null|AbstractField|ForeignKeyField|ForeignKeysField|PivotField|RelatedField|RelatedKeysField|RelatedKeysMergeField|StringField|BooleanField|ColorField|JSONField|ConcatField|DateTimeField|EmailField|EncryptField|FileField|FloatField|IntegerField|HTMLField|IdField|ImageField|IntegerChoiceField|MethodGetterField|UnixTimeStampField|UrlField|ValueListField
      * @throws InvalidComponentException
      * @throws SchemaNotDefinedException
      */
@@ -822,20 +866,20 @@ final class Schema
      * @return string
      * @throws InvalidComponentException
      */
-    public function getIdString()
+    public function getIdString(): string
     {
         $this->getIdentifiers();
-        return implode('-', $this->idColumns);
+        return trim(implode('-', $this->idColumns));
     }
 
     /**
      * @return string
      * @throws InvalidComponentException
      */
-    public function getIdInTableString()
+    public function getIdInTableString(): string
     {
         $this->getIdentifiers();
-        return implode('-', $this->idColumnsInTable);
+        return trim(implode('-', $this->idColumnsInTable));
     }
 
     /**
@@ -907,6 +951,7 @@ final class Schema
      * @param bool $matchOne
      * @return array|mixed
      * @throws InvalidComponentException
+     * @throws SchemaNotDefinedException
      */
     public function getColumnsPointingToComponent(string $component, bool $matchOne = false)
     {
@@ -990,6 +1035,12 @@ final class Schema
         return $this->addField(ColorField::define($name, $column)->setNullable($nullable));
     }
 
+    /**
+     * @return array
+     * @throws InvalidComponentException
+     * @throws SchemaNotDefinedException
+     * @deprecated
+     */
     public function getFieldsAvailableInCreateView(): array
     {
         return array_filter($this->getAllFields(), function (AbstractField $field) {
@@ -997,6 +1048,12 @@ final class Schema
         });
     }
 
+    /**
+     * @return array
+     * @throws InvalidComponentException
+     * @throws SchemaNotDefinedException
+     * @deprecated
+     */
     public function getFieldsAvailableInUpdateView(): array
     {
         return array_filter($this->getAllFields(), function (AbstractField $field) {
@@ -1057,6 +1114,13 @@ final class Schema
         return [];
     }
 
+    /**
+     * @param string $view
+     * @return array
+     * @throws InvalidComponentException
+     * @throws SchemaNotDefinedException
+     * @deprecated
+     */
     public function getViewConfigForFields(string $view): array
     {
         $fields = array_filter($this->getAllFields(), function (AbstractField $field) use ($view) {
@@ -1093,12 +1157,24 @@ final class Schema
         return $r;
     }
 
+    /**
+     * @param string $view
+     * @param array $fields
+     * @return $this
+     * @deprecated
+     */
     public function setExcludedFieldsForViewFeed(string $view, array $fields): static
     {
         $this->excludeFieldFromViewFeed[$view] = $fields;
         return $this;
     }
 
+    /**
+     * @param string $view
+     * @param string $field
+     * @return bool
+     * @deprecated
+     */
     public function hasToExcludeFieldFromViewFeed(string $view, string $field): bool
     {
         if (!$this->excludeFieldFromViewFeed[$view]) return false;
@@ -1106,8 +1182,18 @@ final class Schema
     }
 
 
+    /**
+     * @var array
+     * @deprecated
+     */
     protected array $schemaLayouts = [];
 
+    /**
+     * @param SchemaLayout $layout
+     * @param array $views
+     * @return $this
+     * @deprecated
+     */
     public function setLayout(SchemaLayout $layout, array $views = []): static
     {
         $this->schemaLayouts[$layout->getName()] = $layout;
@@ -1117,6 +1203,12 @@ final class Schema
         return $this;
     }
 
+    /**
+     * @param string $name
+     * @param bool $asArray
+     * @return SchemaLayout|array|null
+     * @deprecated
+     */
     public function getViewLayout(string $name, bool $asArray = false): null|SchemaLayout|array
     {
         if (isset($this->schemaLayouts[$name])){

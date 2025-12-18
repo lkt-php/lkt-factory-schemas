@@ -2,6 +2,9 @@
 
 namespace Lkt\Factory\Schemas\Views\Layouts;
 
+/**
+ * @deprecated
+ */
 class GridLayout extends SchemaLayout
 {
     protected int $amountOfItems = 0;
