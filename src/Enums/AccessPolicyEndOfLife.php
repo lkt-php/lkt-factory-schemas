@@ -2,6 +2,10 @@
 
 namespace Lkt\Factory\Schemas\Enums;
 
+/**
+ * Every AbstractInstance has a native integration with AccessPolicy.
+ * This usage can be one-time or until you desire to remove.
+ */
 enum AccessPolicyEndOfLife: int
 {
     case UntilUpdated = 1;
