@@ -712,11 +712,13 @@ final class Schema
         return $r;
     }
 
-    public function getComposedFields(): array
+    public function getComposedFields(string $viewName = ''): array
     {
         $r = [];
         foreach ($this->getCompositionFields() as $compositionField) {
-            $r = array_merge($r, $this->getFieldComposedFields($compositionField));
+            if (!$viewName || $compositionField->hasViewConfigured($viewName)){
+                $r = array_merge($r, $this->getFieldComposedFields($compositionField));
+            }
         }
 
         return $r;
