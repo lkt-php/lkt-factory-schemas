@@ -1095,7 +1095,7 @@ final class Schema
         $accessPolicy = $accessPolicy instanceof AccessPolicyUsage ? $this->getAccessPolicy($accessPolicy->name) : $this->getAccessPolicy($accessPolicy);
 
         return array_filter($this->getAllFields(), function (AbstractField $field) use ($accessPolicy) {
-            return $accessPolicy->includesField($field);
+            return $accessPolicy->includesFieldName($field->getName());
         });
     }
 

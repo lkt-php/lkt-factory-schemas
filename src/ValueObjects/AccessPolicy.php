@@ -14,7 +14,7 @@ class AccessPolicy
      * @var string[]
      * Formatting:
      *   Case 1: Numeric index means "get the field included in the value"
-     *   Case 2: String index means "get the field defined in the value and uses the key value as the name
+     *   Case 2: String index means "get the field defined in the key and uses the value as the name
      *           This applies in both cases: reading and writing data
      */
     public array $availableFields;
@@ -53,5 +53,13 @@ class AccessPolicy
     public function includesCompositionFieldName(string $field): bool
     {
         return in_array($field, $this->availableCompositionFields) || array_key_exists($field, $this->availableCompositionFields);
+    }
+
+    public function getFieldPublicName(AbstractField $field): ?string
+    {
+        $fieldName = $field->getName();
+        if (array_key_exists($fieldName, $this->availableFields)) return $this->availableFields[$fieldName];
+        if ($this->includesField($field)) return $fieldName;
+        return null;
     }
 }
