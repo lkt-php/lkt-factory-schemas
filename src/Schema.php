@@ -45,6 +45,7 @@ use Lkt\Factory\Schemas\Fields\UrlField;
 use Lkt\Factory\Schemas\Fields\ValueListField;
 use Lkt\Factory\Schemas\Traits\FieldWithCompositionOptionTrait;
 use Lkt\Factory\Schemas\ValueObjects\AccessPolicy;
+use Lkt\Factory\Schemas\ValueObjects\AccessPolicyUsage;
 use Lkt\Factory\Schemas\Values\ComponentValue;
 use Lkt\Factory\Schemas\Values\TableValue;
 use Lkt\Factory\Schemas\Views\Layouts\SchemaLayout;
@@ -1073,6 +1074,24 @@ final class Schema
     {
         return array_filter($this->getAllFields(), function (AbstractField $field) use ($view) {
             return $field->hasViewConfigured($view);
+        });
+    }
+
+    public function getAccessPolicyFields(string|AccessPolicyUsage $accessPolicy): array
+    {
+        $accessPolicy = $accessPolicy instanceof AccessPolicyUsage ? $this->getAccessPolicy($accessPolicy->name) : $this->getAccessPolicy($accessPolicy);
+
+        return array_filter($this->getAllFields(), function (AbstractField $field) use ($accessPolicy) {
+            return $accessPolicy->includesField($field);
+        });
+    }
+
+    public function getAccessPolicyComposedFields(string|AccessPolicyUsage $accessPolicy): array
+    {
+        $accessPolicy = $accessPolicy instanceof AccessPolicyUsage ? $this->getAccessPolicy($accessPolicy->name) : $this->getAccessPolicy($accessPolicy);
+
+        return array_filter($this->getComposedFields(), function (AbstractField $field) use ($accessPolicy) {
+            return $accessPolicy->includesCompositionField($field);
         });
     }
 

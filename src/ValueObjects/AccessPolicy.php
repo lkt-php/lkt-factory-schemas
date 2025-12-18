@@ -2,6 +2,8 @@
 
 namespace Lkt\Factory\Schemas\ValueObjects;
 
+use Lkt\Factory\Schemas\Fields\AbstractField;
+
 class AccessPolicy
 {
     public string $name;
@@ -31,5 +33,15 @@ class AccessPolicy
         $this->name = $name;
         $this->availableFields = $availableFields;
         $this->availableCompositionFields = $availableCompositionFields;
+    }
+
+    public function includesField(AbstractField $field): bool
+    {
+        return in_array($field->getName(), $this->availableFields);
+    }
+
+    public function includesCompositionField(AbstractField $field): bool
+    {
+        return in_array($field->getName(), $this->availableCompositionFields);
     }
 }
