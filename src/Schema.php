@@ -1099,6 +1099,15 @@ final class Schema
         });
     }
 
+    public function getAccessPolicyExcludedFields(string|AccessPolicyUsage $accessPolicy): array
+    {
+        $accessPolicy = $accessPolicy instanceof AccessPolicyUsage ? $this->getAccessPolicy($accessPolicy->name) : $this->getAccessPolicy($accessPolicy);
+
+        return array_filter($this->getAllFields(), function (AbstractField $field) use ($accessPolicy) {
+            return !$accessPolicy->includesFieldName($field->getName());
+        });
+    }
+
     public function getAccessPolicyComposedFields(string|AccessPolicyUsage $accessPolicy): array
     {
         $accessPolicy = $accessPolicy instanceof AccessPolicyUsage ? $this->getAccessPolicy($accessPolicy->name) : $this->getAccessPolicy($accessPolicy);
