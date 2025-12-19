@@ -19,6 +19,7 @@ abstract class AbstractField
     protected FieldLabelValue $label;
     protected FieldCustomTypeValue $customType;
 
+    /** @var array @deprecated */
     protected $configuredViews = [];
 
     protected $defaultValue = [];
@@ -27,6 +28,18 @@ abstract class AbstractField
 
     protected array $customViewName = [];
 
+    protected bool $isIdentifier = false;
+
+    public function setIsIdentifier(bool $status = true): static
+    {
+        $this->isIdentifier = $status;
+        return $this;
+    }
+
+    public function isIdentifier(): bool
+    {
+        return $this->isIdentifier;
+    }
 
     /**
      * @throws InvalidFieldNameException
@@ -135,8 +148,8 @@ abstract class AbstractField
     {
         return $this->customType->getValue();
     }
-    /** @deprecated  */
 
+    /** @deprecated  */
     public function setIsVisibleInCreateView(bool $enabled = true): static
     {
         $this->showInCreateView = new BooleanValue($enabled);
@@ -240,12 +253,22 @@ abstract class AbstractField
         return $this->dataInUpdateView->getValue();
     }
 
+    /**
+     * @param FieldViewConfig $config
+     * @return $this
+     * @deprecated
+     */
     public function configureView(FieldViewConfig $config): static
     {
         $this->configuredViews[$config->getName()] = $config;
         return $this;
     }
 
+    /**
+     * @param string $name
+     * @return bool
+     * @deprecated
+     */
     public function hasViewConfigured(string $name)
     {
         return isset($this->configuredViews[$name]);
@@ -256,7 +279,7 @@ abstract class AbstractField
         return $this->configuredViews[$name];
     }
 
-    public function setDefaultValue($value)
+    public function setDefaultValue($value): static
     {
         $this->defaultValue[0] = $value;
         return $this;

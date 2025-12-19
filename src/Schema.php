@@ -68,6 +68,32 @@ final class Schema
     /** @var AccessPolicy[] */
     protected array $accessPolicies = [];
 
+    protected ?TableValue $table = null;
+
+    protected ?ComponentValue $component = null;
+
+    protected $databaseConnector = '';
+
+    /** @var AbstractField[] */
+    protected $idFields = [];
+    protected $idColumns = [];
+    protected $idColumnsInTable = [];
+
+    /** @var AbstractField[] */
+    protected $fields = [];
+
+    /** @var AbstractCRUD[] */
+    protected $crud = [];
+
+    // Pivot exclusive data
+    protected $pivot = false;
+
+    /** @var InstanceSettings */
+    protected $instanceSettings;
+
+    protected $countableField = '';
+    protected $itemsPerPage = 0;
+
     /**
      * @return Schema[]
      */
@@ -127,32 +153,6 @@ final class Schema
         return self::$stack[$code] instanceof Schema;
     }
 
-    protected ?TableValue $table = null;
-
-    protected ?ComponentValue $component = null;
-
-    protected $databaseConnector = '';
-
-    /** @var AbstractField[] */
-    protected $idFields = [];
-    protected $idColumns = [];
-    protected $idColumnsInTable = [];
-
-    /** @var AbstractField[] */
-    protected $fields = [];
-
-    /** @var AbstractCRUD[] */
-    protected $crud = [];
-
-    // Pivot exclusive data
-    protected $pivot = false;
-
-    /** @var InstanceSettings */
-    protected $instanceSettings;
-
-    protected $countableField = '';
-    protected $itemsPerPage = 0;
-
     /**
      * @param string $table
      * @param string $component
@@ -165,12 +165,25 @@ final class Schema
         return new static($table, $component);
     }
 
+    /**
+     * @param string $component
+     * @return self
+     * @throws InvalidComponentException
+     * @throws InvalidTableException
+     * @todo check
+     */
     public static function local(string $component): self
     {
         return new static('_', $component);
     }
 
-
+    /**
+     * @param string $component
+     * @return self
+     * @throws InvalidComponentException
+     * @throws InvalidTableException
+     * @todo check
+     */
     public static function module(string $component): self
     {
         return new static('_', $component);
@@ -224,6 +237,23 @@ final class Schema
         }
 
         return $this->accessPolicies[$name];
+    }
+
+    public function hasAccessPolicy(string $name): bool
+    {
+        return $this->accessPolicies[$name] instanceof AccessPolicy;
+    }
+
+    public function hasRelatedAccessPolicy(): bool
+    {
+        return $this->hasAccessPolicy('lkt-related');
+    }
+
+    public function setRelatedAccessPolicy(array $availableFields = [], array $availableCompositionFields = []): static
+    {
+        $policy = 'lkt-related';
+        $this->accessPolicies[$policy] = new AccessPolicy($policy, $availableFields, $availableCompositionFields);
+        return $this;
     }
 
     public function getAccessPolicyForRelationalField(string|AccessPolicyUsage|AccessPolicy $accessPolicy, RelatedField|ForeignKeyField|ForeignKeysField $field): ?AccessPolicy
@@ -696,7 +726,7 @@ final class Schema
     }
 
     /**
-     * @return FieldWithCompositionOptionTrait[]
+     * @return array<RelatedField|ForeignKeyField>
      */
     public function getCompositionFields(): array
     {
@@ -840,7 +870,7 @@ final class Schema
         }
 
         $fields = array_filter($stack, function (AbstractField $field) {
-            return $field instanceof IdField;
+            return $field instanceof IdField || $field->isIdentifier();
         });
 
         $this->idColumns = array_keys($fields);
@@ -917,7 +947,7 @@ final class Schema
     /**
      * @param string $component
      * @return array
-     * @throws InvalidComponentException
+     * @throws InvalidComponentException|SchemaNotDefinedException
      */
     public function getFieldsPointingToComponent(string $component): array
     {
@@ -938,7 +968,7 @@ final class Schema
     /**
      * @param string $component
      * @return AbstractField|null
-     * @throws InvalidComponentException
+     * @throws InvalidComponentException|SchemaNotDefinedException
      */
     public function getOneFieldPointingToComponent(string $component): ?AbstractField
     {
@@ -1019,31 +1049,77 @@ final class Schema
         return $this->databaseConnector;
     }
 
+    /**
+     * @param string $name
+     * @param string $column
+     * @return $this
+     * @throws Exceptions\InvalidFieldNameException
+     * @deprecated
+     */
     final public function setIdField(string $name, string $column = ''): self
     {
         return $this->addField(IdField::define($name, $column));
     }
 
+    /**
+     * @param string $name
+     * @param string $column
+     * @return $this
+     * @throws Exceptions\InvalidFieldNameException
+     * @deprecated
+     */
     final public function setMultipleIdField(string $name, string $column = ''): self
     {
         return $this->addField(IdField::define($name, $column));
     }
 
+    /**
+     * @param string $name
+     * @param string $column
+     * @param bool $nullable
+     * @return $this
+     * @throws Exceptions\InvalidFieldNameException
+     * @deprecated
+     */
     final public function addIntegerField(string $name, string $column = '', bool $nullable = false): self
     {
         return $this->addField(IntegerField::define($name, $column)->setNullable($nullable));
     }
 
+    /**
+     * @param string $name
+     * @param string $column
+     * @param bool $nullable
+     * @return $this
+     * @throws Exceptions\InvalidFieldNameException
+     * @deprecated
+     */
     final public function addStringField(string $name, string $column = '', bool $nullable = false): self
     {
         return $this->addField(StringField::define($name, $column)->setNullable($nullable));
     }
 
+    /**
+     * @param string $name
+     * @param string $column
+     * @param bool $nullable
+     * @return $this
+     * @throws Exceptions\InvalidFieldNameException
+     * @deprecated
+     */
     final public function addBooleanField(string $name, string $column = '', bool $nullable = false): self
     {
         return $this->addField(BooleanField::define($name, $column)->setNullable($nullable));
     }
 
+    /**
+     * @param string $name
+     * @param string $column
+     * @param bool $nullable
+     * @return $this
+     * @throws Exceptions\InvalidFieldNameException
+     * @deprecated
+     */
     final public function addColorField(string $name, string $column = '', bool $nullable = false): self
     {
         return $this->addField(ColorField::define($name, $column)->setNullable($nullable));
