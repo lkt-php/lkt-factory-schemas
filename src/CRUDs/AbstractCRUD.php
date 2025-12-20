@@ -2,6 +2,10 @@
 
 namespace Lkt\Factory\Schemas\CRUDs;
 
+/**
+ *
+ * @deprecated
+ */
 abstract class AbstractCRUD
 {
     protected string $className = '';

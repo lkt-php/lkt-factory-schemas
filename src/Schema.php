@@ -43,7 +43,6 @@ use Lkt\Factory\Schemas\Fields\StringField;
 use Lkt\Factory\Schemas\Fields\UnixTimeStampField;
 use Lkt\Factory\Schemas\Fields\UrlField;
 use Lkt\Factory\Schemas\Fields\ValueListField;
-use Lkt\Factory\Schemas\Traits\FieldWithCompositionOptionTrait;
 use Lkt\Factory\Schemas\ValueObjects\AccessPolicy;
 use Lkt\Factory\Schemas\ValueObjects\AccessPolicyUsage;
 use Lkt\Factory\Schemas\Values\ComponentValue;
@@ -170,7 +169,7 @@ final class Schema
      * @return self
      * @throws InvalidComponentException
      * @throws InvalidTableException
-     * @todo check
+     * @deprecated
      */
     public static function local(string $component): self
     {
@@ -182,7 +181,7 @@ final class Schema
      * @return self
      * @throws InvalidComponentException
      * @throws InvalidTableException
-     * @todo check
+     * @deprecated
      */
     public static function module(string $component): self
     {
@@ -322,6 +321,7 @@ final class Schema
     /**
      * @param AbstractCRUD $crud
      * @return $this
+     * @deprecated
      */
     public function addCRUD(AbstractCRUD $crud): self
     {
@@ -331,6 +331,7 @@ final class Schema
 
     /**
      * @return CreateHandler|null
+     * @deprecated
      */
     public function getCreateHandler(): ?CreateHandler
     {
@@ -345,6 +346,7 @@ final class Schema
 
     /**
      * @return DeleteHandler|null
+     * @deprecated
      */
     public function getDeleteHandler(): ?DeleteHandler
     {
@@ -359,6 +361,7 @@ final class Schema
 
     /**
      * @return DeleteHandler|null
+     * @deprecated
      */
     public function getUpdateHandler(): ?UpdateHandler
     {
