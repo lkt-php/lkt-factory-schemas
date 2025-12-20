@@ -75,13 +75,11 @@ class AccessPolicy
     {
         if (array_key_exists($fieldName, $this->availableCompositionFields)) {
             $key = $fieldName;
-            $isComposition = true;
         }
 
         if (in_array($fieldName, $this->availableCompositionFields)) {
             $keys = array_keys($this->availableCompositionFields, $fieldName);
             $key = reset($keys);
-            $isComposition = true;
         }
         if (!$key) return null;
         return $schema->getCompositionFieldComposingThisField($key);
