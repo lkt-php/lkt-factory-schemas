@@ -750,9 +750,16 @@ final class Schema
 
     public function getComposedField(string $fieldName): ?AbstractField
     {
-        return array_filter($this->getComposedFields(), function ($field) use ($fieldName) {
+        $r = array_filter($this->getComposedFields(), function ($field) use ($fieldName) {
             return $field?->getName() === $fieldName;
-        })[0];
+        });
+        $r = reset($r);
+        return $r === false ? null : $r;
+    }
+
+    public function isComposedField(string $fieldName): bool
+    {
+        return is_object($this->getComposedField($fieldName));
     }
 
     public function getCompositionFieldComposingThisField(string $fieldName): null|RelatedField|ForeignKeyField
