@@ -70,12 +70,18 @@ abstract class AbstractField
         return new static($name, $column);
     }
 
+    /**
+     * @return deprecated
+     */
     public function getValidations()
     {
         // @todo
         return [];
     }
 
+    /**
+     * @return deprecated
+     */
     public function getParser()
     {
         // @todo

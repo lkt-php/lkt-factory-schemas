@@ -81,7 +81,10 @@ final class Schema
     /** @var AbstractField[] */
     protected $fields = [];
 
-    /** @var AbstractCRUD[] */
+    /**
+     * @var AbstractCRUD[]
+     * @deprecated
+     * */
     protected $crud = [];
 
     // Pivot exclusive data
