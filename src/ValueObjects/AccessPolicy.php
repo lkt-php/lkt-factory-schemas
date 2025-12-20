@@ -65,6 +65,8 @@ class AccessPolicy
         if (in_array($fieldName, $this->availableFields)) {
             $keys = array_keys($this->availableFields, $fieldName);
             $key = reset($keys);
+
+            if (is_numeric($key)) $key = $fieldName;
         }
 
         if (!$key) return null;
@@ -88,8 +90,8 @@ class AccessPolicy
     public function getFieldPublicName(AbstractField $field): ?string
     {
         $fieldName = $field->getName();
-        if (array_key_exists($fieldName, $this->availableFields)) return $this->availableFields[$fieldName];
-        if ($this->includesField($field)) return $fieldName;
+        if (array_key_exists($fieldName, $this->availableFields)) return $fieldName;
+        if ($this->includesField($field)) return $this->availableFields[$fieldName];
         return null;
     }
 }

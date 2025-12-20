@@ -1176,9 +1176,18 @@ final class Schema
     {
         $accessPolicy = $accessPolicy instanceof AccessPolicyUsage ? $this->getAccessPolicy($accessPolicy->name) : $this->getAccessPolicy($accessPolicy);
 
-        return array_filter($this->getAllFields(), function (AbstractField $field) use ($accessPolicy) {
-            return $accessPolicy->includesFieldName($field->getName());
-        });
+        $r = [];
+        foreach ($accessPolicy->availableFields as $key => $val) {
+            $searchKey = is_numeric($key) ? $val : $key;
+            $f = $accessPolicy->getSchemaField($this, $searchKey);
+            if (!$f) $accessPolicy->getSchemaCompositionField($this, $searchKey);
+
+            if ($f) {
+                $r[$val] = $f;
+            }
+        }
+
+        return $r;
     }
 
     public function getAccessPolicyExcludedFields(string|AccessPolicyUsage $accessPolicy): array
@@ -1208,7 +1217,7 @@ final class Schema
      */
     public function setFieldsForRelatedMode(string $value, string $label, array $additionalFields = []): static
     {
-        $this->fieldsForRelatedMode = [$value, $label, $additionalFields];
+        $this->setRelatedAccessPolicy([$value => 'value', $label => 'label', ...$additionalFields]);
         return $this;
     }
 
