@@ -3,6 +3,7 @@
 namespace Lkt\Factory\Schemas\ValueObjects;
 
 use Lkt\Factory\Schemas\Fields\AbstractField;
+use Lkt\Factory\Schemas\Schema;
 
 class AccessPolicy
 {
@@ -53,6 +54,37 @@ class AccessPolicy
     public function includesCompositionFieldName(string $field): bool
     {
         return in_array($field, $this->availableCompositionFields) || array_key_exists($field, $this->availableCompositionFields);
+    }
+
+    public function getSchemaField(Schema $schema, string $fieldName): \Lkt\Factory\Schemas\Fields\IntegerField|\Lkt\Factory\Schemas\Fields\MethodGetterField|\Lkt\Factory\Schemas\Fields\RelatedKeysField|\Lkt\Factory\Schemas\Fields\EncryptField|AbstractField|\Lkt\Factory\Schemas\Fields\StringField|\Lkt\Factory\Schemas\Fields\PivotField|\Lkt\Factory\Schemas\Fields\ForeignKeysField|\Lkt\Factory\Schemas\Fields\DateTimeField|\Lkt\Factory\Schemas\Fields\UrlField|\Lkt\Factory\Schemas\Fields\HTMLField|\Lkt\Factory\Schemas\Fields\ImageField|\Lkt\Factory\Schemas\Fields\ColorField|\Lkt\Factory\Schemas\Fields\UnixTimeStampField|\Lkt\Factory\Schemas\Fields\RelatedField|\Lkt\Factory\Schemas\Fields\FloatField|\Lkt\Factory\Schemas\Fields\RelatedKeysMergeField|\Lkt\Factory\Schemas\Fields\ConcatField|\Lkt\Factory\Schemas\Fields\JSONField|\Lkt\Factory\Schemas\Fields\ForeignKeyField|\Lkt\Factory\Schemas\Fields\BooleanField|\Lkt\Factory\Schemas\Fields\IntegerChoiceField|\Lkt\Factory\Schemas\Fields\FileField|\Lkt\Factory\Schemas\Fields\EmailField|\Lkt\Factory\Schemas\Fields\ValueListField|\Lkt\Factory\Schemas\Fields\IdField|null
+    {
+        if (array_key_exists($fieldName, $this->availableFields)) {
+            $key = $fieldName;
+        }
+
+        if (in_array($fieldName, $this->availableFields)) {
+            $keys = array_keys($this->availableFields, $fieldName);
+            $key = reset($keys);
+        }
+
+        if (!$key) return null;
+        return $schema->getField($key);
+    }
+
+    public function getSchemaCompositionField(Schema $schema, string $fieldName): \Lkt\Factory\Schemas\Fields\IntegerField|\Lkt\Factory\Schemas\Fields\MethodGetterField|\Lkt\Factory\Schemas\Fields\RelatedKeysField|\Lkt\Factory\Schemas\Fields\EncryptField|AbstractField|\Lkt\Factory\Schemas\Fields\StringField|\Lkt\Factory\Schemas\Fields\PivotField|\Lkt\Factory\Schemas\Fields\ForeignKeysField|\Lkt\Factory\Schemas\Fields\DateTimeField|\Lkt\Factory\Schemas\Fields\UrlField|\Lkt\Factory\Schemas\Fields\HTMLField|\Lkt\Factory\Schemas\Fields\ImageField|\Lkt\Factory\Schemas\Fields\ColorField|\Lkt\Factory\Schemas\Fields\UnixTimeStampField|\Lkt\Factory\Schemas\Fields\RelatedField|\Lkt\Factory\Schemas\Fields\FloatField|\Lkt\Factory\Schemas\Fields\RelatedKeysMergeField|\Lkt\Factory\Schemas\Fields\ConcatField|\Lkt\Factory\Schemas\Fields\JSONField|\Lkt\Factory\Schemas\Fields\ForeignKeyField|\Lkt\Factory\Schemas\Fields\BooleanField|\Lkt\Factory\Schemas\Fields\IntegerChoiceField|\Lkt\Factory\Schemas\Fields\FileField|\Lkt\Factory\Schemas\Fields\EmailField|\Lkt\Factory\Schemas\Fields\ValueListField|\Lkt\Factory\Schemas\Fields\IdField|null
+    {
+        if (array_key_exists($fieldName, $this->availableCompositionFields)) {
+            $key = $fieldName;
+            $isComposition = true;
+        }
+
+        if (in_array($fieldName, $this->availableCompositionFields)) {
+            $keys = array_keys($this->availableCompositionFields, $fieldName);
+            $key = reset($keys);
+            $isComposition = true;
+        }
+        if (!$key) return null;
+        return $schema->getCompositionFieldComposingThisField($key);
     }
 
     public function getFieldPublicName(AbstractField $field): ?string
