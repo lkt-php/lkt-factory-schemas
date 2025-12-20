@@ -4,10 +4,6 @@ namespace Lkt\Factory\Schemas;
 
 use Lkt\Factory\Instantiator\Instantiator;
 use Lkt\Factory\Schemas\ComputedFields\AbstractComputedField;
-use Lkt\Factory\Schemas\CRUDs\AbstractCRUD;
-use Lkt\Factory\Schemas\CRUDs\CreateHandler;
-use Lkt\Factory\Schemas\CRUDs\DeleteHandler;
-use Lkt\Factory\Schemas\CRUDs\UpdateHandler;
 use Lkt\Factory\Schemas\Exceptions\DuplicatedAccessPolicyDefinitionException;
 use Lkt\Factory\Schemas\Exceptions\InvalidComponentException;
 use Lkt\Factory\Schemas\Exceptions\InvalidTableException;
@@ -47,7 +43,6 @@ use Lkt\Factory\Schemas\ValueObjects\AccessPolicy;
 use Lkt\Factory\Schemas\ValueObjects\AccessPolicyUsage;
 use Lkt\Factory\Schemas\Values\ComponentValue;
 use Lkt\Factory\Schemas\Values\TableValue;
-use Lkt\Factory\Schemas\Views\Layouts\SchemaLayout;
 use Lkt\QueryBuilding\Query;
 use function Lkt\Tools\Arrays\getArrayFirstPosition;
 
@@ -55,9 +50,6 @@ final class Schema
 {
     /** @var Schema[] */
     private static array $stack = [];
-
-    protected array $fieldsPerView = [];
-    protected array $fieldsForRelatedMode = [];
     protected array $excludeFieldFromViewFeed = [];
 
     protected string $slugPattern = '';
@@ -80,12 +72,6 @@ final class Schema
 
     /** @var AbstractField[] */
     protected $fields = [];
-
-    /**
-     * @var AbstractCRUD[]
-     * @deprecated
-     * */
-    protected $crud = [];
 
     // Pivot exclusive data
     protected $pivot = false;
@@ -321,62 +307,6 @@ final class Schema
         return $this->instanceSettings;
     }
 
-    /**
-     * @param AbstractCRUD $crud
-     * @return $this
-     * @deprecated
-     */
-    public function addCRUD(AbstractCRUD $crud): self
-    {
-        $this->crud[] = $crud;
-        return $this;
-    }
-
-    /**
-     * @return CreateHandler|null
-     * @deprecated
-     */
-    public function getCreateHandler(): ?CreateHandler
-    {
-        $data = array_values(array_filter($this->crud, function ($crud) {
-            return $crud instanceof CreateHandler;
-        }));
-        if (count($data) > 0) {
-            return $data[0];
-        }
-        return null;
-    }
-
-    /**
-     * @return DeleteHandler|null
-     * @deprecated
-     */
-    public function getDeleteHandler(): ?DeleteHandler
-    {
-        $data = array_values(array_filter($this->crud, function ($crud) {
-            return $crud instanceof DeleteHandler;
-        }));
-        if (count($data) > 0) {
-            return $data[0];
-        }
-        return null;
-    }
-
-    /**
-     * @return DeleteHandler|null
-     * @deprecated
-     */
-    public function getUpdateHandler(): ?UpdateHandler
-    {
-        $data = array_values(array_filter($this->crud, function ($crud) {
-            return $crud instanceof UpdateHandler;
-        }));
-        if (count($data) > 0) {
-            return $data[0];
-        }
-        return null;
-    }
-
 
     /**
      * @param AbstractField $field
@@ -584,7 +514,9 @@ final class Schema
     }
 
     /**
-     * @return AbstractField[]
+     * @return array<ForeignKeyField|PivotField|RelatedField>
+     * @throws InvalidComponentException
+     * @throws SchemaNotDefinedException
      */
     public function getFilterableFields(): array
     {
@@ -806,13 +738,11 @@ final class Schema
         return $r;
     }
 
-    public function getComposedFields(string $viewName = ''): array
+    public function getComposedFields(): array
     {
         $r = [];
         foreach ($this->getCompositionFields() as $compositionField) {
-            if (!$viewName || $compositionField->hasViewConfigured($viewName)){
-                $r = array_merge($r, $this->getFieldComposedFields($compositionField));
-            }
+            $r = array_merge($r, $this->getFieldComposedFields($compositionField));
         }
 
         return $r;
@@ -1055,123 +985,6 @@ final class Schema
         return $this->databaseConnector;
     }
 
-    /**
-     * @param string $name
-     * @param string $column
-     * @return $this
-     * @throws Exceptions\InvalidFieldNameException
-     * @deprecated
-     */
-    final public function setIdField(string $name, string $column = ''): self
-    {
-        return $this->addField(IdField::define($name, $column));
-    }
-
-    /**
-     * @param string $name
-     * @param string $column
-     * @return $this
-     * @throws Exceptions\InvalidFieldNameException
-     * @deprecated
-     */
-    final public function setMultipleIdField(string $name, string $column = ''): self
-    {
-        return $this->addField(IdField::define($name, $column));
-    }
-
-    /**
-     * @param string $name
-     * @param string $column
-     * @param bool $nullable
-     * @return $this
-     * @throws Exceptions\InvalidFieldNameException
-     * @deprecated
-     */
-    final public function addIntegerField(string $name, string $column = '', bool $nullable = false): self
-    {
-        return $this->addField(IntegerField::define($name, $column)->setNullable($nullable));
-    }
-
-    /**
-     * @param string $name
-     * @param string $column
-     * @param bool $nullable
-     * @return $this
-     * @throws Exceptions\InvalidFieldNameException
-     * @deprecated
-     */
-    final public function addStringField(string $name, string $column = '', bool $nullable = false): self
-    {
-        return $this->addField(StringField::define($name, $column)->setNullable($nullable));
-    }
-
-    /**
-     * @param string $name
-     * @param string $column
-     * @param bool $nullable
-     * @return $this
-     * @throws Exceptions\InvalidFieldNameException
-     * @deprecated
-     */
-    final public function addBooleanField(string $name, string $column = '', bool $nullable = false): self
-    {
-        return $this->addField(BooleanField::define($name, $column)->setNullable($nullable));
-    }
-
-    /**
-     * @param string $name
-     * @param string $column
-     * @param bool $nullable
-     * @return $this
-     * @throws Exceptions\InvalidFieldNameException
-     * @deprecated
-     */
-    final public function addColorField(string $name, string $column = '', bool $nullable = false): self
-    {
-        return $this->addField(ColorField::define($name, $column)->setNullable($nullable));
-    }
-
-    /**
-     * @return array
-     * @throws InvalidComponentException
-     * @throws SchemaNotDefinedException
-     * @deprecated
-     */
-    public function getFieldsAvailableInCreateView(): array
-    {
-        return array_filter($this->getAllFields(), function (AbstractField $field) {
-            return $field->hasViewConfigured('create');
-        });
-    }
-
-    /**
-     * @return array
-     * @throws InvalidComponentException
-     * @throws SchemaNotDefinedException
-     * @deprecated
-     */
-    public function getFieldsAvailableInUpdateView(): array
-    {
-        return array_filter($this->getAllFields(), function (AbstractField $field) {
-            return $field->hasViewConfigured('edit');
-        });
-    }
-
-    /** @deprecated  */
-    public function setFieldsForView(string $view, array $fields)
-    {
-        $this->fieldsPerView[$view] = $fields;
-        return $this;
-    }
-
-    /** @deprecated  */
-    public function getViewFields(string $view)
-    {
-        return array_filter($this->getAllFields(), function (AbstractField $field) use ($view) {
-            return $field->hasViewConfigured($view);
-        });
-    }
-
     public function getAccessPolicyFields(string|AccessPolicyUsage $accessPolicy): array
     {
         $accessPolicy = $accessPolicy instanceof AccessPolicyUsage ? $this->getAccessPolicy($accessPolicy->name) : $this->getAccessPolicy($accessPolicy);
@@ -1222,94 +1035,6 @@ final class Schema
     }
 
     /**
-     * @return AbstractField|null
-     * @throws InvalidComponentException
-     * @throws SchemaNotDefinedException
-     * @deprecated
-     */
-    public function getRelatedModeValueField(): ?AbstractField
-    {
-        if (isset($this->fieldsForRelatedMode[0])) return $this->getField($this->fieldsForRelatedMode[0]);
-        return null;
-    }
-
-    /**
-     * @return AbstractField|null
-     * @throws InvalidComponentException
-     * @throws SchemaNotDefinedException
-     * @deprecated
-     */
-    public function getRelatedModeLabelField(): ?AbstractField
-    {
-        if (isset($this->fieldsForRelatedMode[1])) return $this->getField($this->fieldsForRelatedMode[1]);
-        return null;
-    }
-
-    /**
-     * @return AbstractField[]
-     * @throws InvalidComponentException
-     * @throws SchemaNotDefinedException
-     * @deprecated
-     */
-    public function getRelatedModeAdditionalFields(): array
-    {
-        if (isset($this->fieldsForRelatedMode[2]) && is_array($this->fieldsForRelatedMode[2]) && count($this->fieldsForRelatedMode[2]) > 0) {
-            $r = [];
-            foreach ($this->fieldsForRelatedMode[2] as $k => $f) {
-                $storeKey = $k;
-                $field = $this->getField($f);
-                if (is_numeric($storeKey) && is_object($field)) $storeKey = $field->getName();
-                $r[$storeKey] = $field;
-            }
-            return $r;
-        }
-        return [];
-    }
-
-    /**
-     * @param string $view
-     * @return array
-     * @throws InvalidComponentException
-     * @throws SchemaNotDefinedException
-     * @deprecated
-     */
-    public function getViewConfigForFields(string $view): array
-    {
-        $fields = array_filter($this->getAllFields(), function (AbstractField $field) use ($view) {
-            return $field->hasViewConfigured($view);
-        });
-
-        $r = [];
-
-        foreach ($fields as $field) {
-            $cfg = $field->getViewConfig($view);
-            $relatedComponent = '';
-            $pivotComponent = '';
-            if ($field instanceof ForeignKeysField || $field instanceof ForeignKeyField || $field instanceof RelatedField || $field instanceof PivotField) {
-                $relatedComponent = $field->getComponent();
-            }
-            if ($field instanceof PivotField) {
-                $pivotComponent = $field->getPivotComponent();
-            }
-            $mandatory = false;
-            if (method_exists($field, 'isMandatory')) $mandatory = $field->isMandatory();
-            $r[] = [
-                'key' => $field instanceof MethodGetterField ? $field->getColumn() : $field->getName(),
-                'label' => $field->getLabel(),
-                'type' => $cfg->getDisplayComponent(),
-                'mode' => $cfg->getMode(),
-                'relatedComponent' => $relatedComponent,
-                'pivotComponent' => $pivotComponent,
-                'i18nOptions' => $field instanceof StringChoiceField ? $field->getI18nViewOptions() : '',
-                'multiple' => $cfg->isMultiple(),
-                'mandatory' => $mandatory,
-            ];
-        }
-
-        return $r;
-    }
-
-    /**
      * @param string $view
      * @param array $fields
      * @return $this
@@ -1319,56 +1044,6 @@ final class Schema
     {
         $this->excludeFieldFromViewFeed[$view] = $fields;
         return $this;
-    }
-
-    /**
-     * @param string $view
-     * @param string $field
-     * @return bool
-     * @deprecated
-     */
-    public function hasToExcludeFieldFromViewFeed(string $view, string $field): bool
-    {
-        if (!$this->excludeFieldFromViewFeed[$view]) return false;
-        return in_array($field, $this->excludeFieldFromViewFeed[$view]);
-    }
-
-
-    /**
-     * @var array
-     * @deprecated
-     */
-    protected array $schemaLayouts = [];
-
-    /**
-     * @param SchemaLayout $layout
-     * @param array $views
-     * @return $this
-     * @deprecated
-     */
-    public function setLayout(SchemaLayout $layout, array $views = []): static
-    {
-        $this->schemaLayouts[$layout->getName()] = $layout;
-        foreach ($views as $view) {
-            $this->schemaLayouts[$view] = $layout;
-        }
-        return $this;
-    }
-
-    /**
-     * @param string $name
-     * @param bool $asArray
-     * @return SchemaLayout|array|null
-     * @deprecated
-     */
-    public function getViewLayout(string $name, bool $asArray = false): null|SchemaLayout|array
-    {
-        if (isset($this->schemaLayouts[$name])){
-            if ($asArray) return $this->schemaLayouts[$name]->toArray();
-            return $this->schemaLayouts[$name];
-        }
-        if ($asArray) return [];
-        return null;
     }
 
     public function register(): static

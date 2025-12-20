@@ -3,12 +3,10 @@
 namespace Lkt\Factory\Schemas\Fields;
 
 use Lkt\Factory\Schemas\Exceptions\InvalidFieldNameException;
-use Lkt\Factory\Schemas\Values\BooleanValue;
 use Lkt\Factory\Schemas\Values\FieldColumnValue;
 use Lkt\Factory\Schemas\Values\FieldCustomTypeValue;
 use Lkt\Factory\Schemas\Values\FieldLabelValue;
 use Lkt\Factory\Schemas\Values\FieldNameValue;
-use Lkt\Factory\Schemas\Views\FieldViewConfig;
 
 abstract class AbstractField
 {
@@ -18,9 +16,6 @@ abstract class AbstractField
     protected FieldColumnValue $column;
     protected FieldLabelValue $label;
     protected FieldCustomTypeValue $customType;
-
-    /** @var array @deprecated */
-    protected $configuredViews = [];
 
     protected $defaultValue = [];
 
@@ -68,24 +63,6 @@ abstract class AbstractField
     final public static function define(string $name, string $column = ''): static
     {
         return new static($name, $column);
-    }
-
-    /**
-     * @return deprecated
-     */
-    public function getValidations()
-    {
-        // @todo
-        return [];
-    }
-
-    /**
-     * @return deprecated
-     */
-    public function getParser()
-    {
-        // @todo
-        return null;
     }
 
     public function getSetter(): string
@@ -153,136 +130,6 @@ abstract class AbstractField
     public function getCustomType(): string
     {
         return $this->customType->getValue();
-    }
-
-    /** @deprecated  */
-    public function setIsVisibleInCreateView(bool $enabled = true): static
-    {
-        $this->showInCreateView = new BooleanValue($enabled);
-        return $this;
-    }
-
-    /** @deprecated  */
-    public function isVisibleInCreateView(): bool
-    {
-        return $this->showInCreateView->getValue();
-    }
-
-    /** @deprecated  */
-    public function setIsEditableInCreateView(bool $enabled = true): static
-    {
-        $this->editInCreateView = new BooleanValue($enabled);
-        return $this;
-    }
-    /** @deprecated  */
-
-    public function isEditableInCreateView(): bool
-    {
-        return $this->editInCreateView->getValue();
-    }
-
-    /** @deprecated  */
-    public function setIsHiddenInCreateView(bool $enabled = true): static
-    {
-        $this->hideInCreateView = new BooleanValue($enabled);
-        return $this;
-    }
-
-    /** @deprecated  */
-    public function isHiddenInCreateView(): bool
-    {
-        return $this->hideInCreateView->getValue();
-    }
-    /** @deprecated  */
-
-    public function setIsDataInCreateView(bool $enabled = true): static
-    {
-        $this->hideInCreateView = new BooleanValue($enabled);
-        return $this;
-    }
-    /** @deprecated  */
-
-    public function isDataInCreateView(): bool
-    {
-        return $this->dataInCreateView->getValue();
-    }
-
-    /** @deprecated  */
-    public function setIsVisibleInUpdateView(bool $enabled = true): static
-    {
-        $this->showInUpdateView = new BooleanValue($enabled);
-        return $this;
-    }
-
-    /** @deprecated  */
-    public function isVisibleInUpdateView(): bool
-    {
-        return $this->showInUpdateView->getValue();
-    }
-
-    /** @deprecated  */
-    public function setIsEditableInUpdateView(bool $enabled = true): static
-    {
-        $this->editInUpdateView = new BooleanValue($enabled);
-        return $this;
-    }
-
-    /** @deprecated  */
-    public function isEditableInUpdateView(): bool
-    {
-        return $this->editInUpdateView->getValue();
-    }
-
-    /** @deprecated  */
-    public function setIsHiddenInUpdateView(bool $enabled = true): static
-    {
-        $this->hideInUpdateView = new BooleanValue($enabled);
-        return $this;
-    }
-
-    /** @deprecated  */
-    public function isHiddenInUpdateView(): bool
-    {
-        return $this->hideInUpdateView->getValue();
-    }
-
-    /** @deprecated  */
-    public function setIsDataInUpdateView(bool $enabled = true): static
-    {
-        $this->dataInUpdateView = new BooleanValue($enabled);
-        return $this;
-    }
-
-    /** @deprecated  */
-    public function isDataInUpdateView(): bool
-    {
-        return $this->dataInUpdateView->getValue();
-    }
-
-    /**
-     * @param FieldViewConfig $config
-     * @return $this
-     * @deprecated
-     */
-    public function configureView(FieldViewConfig $config): static
-    {
-        $this->configuredViews[$config->getName()] = $config;
-        return $this;
-    }
-
-    /**
-     * @param string $name
-     * @return bool
-     * @deprecated
-     */
-    public function hasViewConfigured(string $name)
-    {
-        return isset($this->configuredViews[$name]);
-    }
-
-    public function getViewConfig(string $name): FieldViewConfig
-    {
-        return $this->configuredViews[$name];
     }
 
     public function setDefaultValue($value): static
