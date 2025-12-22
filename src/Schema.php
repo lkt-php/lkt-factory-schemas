@@ -585,6 +585,11 @@ final class Schema
         return $this->getField($fieldName) !== null;
     }
 
+    public function hasFieldDefined(string $fieldName): bool
+    {
+        return $this->fields[$fieldName] !== null;
+    }
+
     public function getFeedField(string $field): ?AbstractField
     {
         $haystack = $this->getAllFields();
@@ -733,7 +738,9 @@ final class Schema
                 $composedField = $nestedComposedSchema->getField($composedFieldName);
             }
 
-            $r[$fieldName] = $composedField;
+            if ($composedField) {
+                $r[$fieldName] = $composedField;
+            }
         }
         return $r;
     }
