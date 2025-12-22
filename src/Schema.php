@@ -823,7 +823,11 @@ final class Schema
             return $field instanceof IdField || $field->isIdentifier();
         });
 
-        $this->idColumns = array_keys($fields);
+        $this->idColumns = array_values(array_map(function (AbstractField $field) {
+            $r = $field->getName();
+            if ($field instanceof ForeignKeyField) $r .= 'Id';
+            return $r;
+        }, $fields));
         $this->idFields = array_values($fields);
         $this->idColumnsInTable = array_map(function ($field) {
             return $field->getColumn();
