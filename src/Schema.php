@@ -587,6 +587,24 @@ final class Schema
 
     public function hasFieldDefined(string $fieldName): bool
     {
+        $l = strlen($fieldName);
+        $endsWithId = substr($fieldName, $l - 2, 2) === 'Id';
+        if ($endsWithId) {
+            $keyWithoutId = substr($fieldName, 0, $l - 2);
+            if (isset($this->fields[$keyWithoutId]) && $this->fields[$keyWithoutId] instanceof ForeignKeyField) {
+                return $this->fields[$keyWithoutId] !== null;
+            }
+        }
+
+        $l = strlen($fieldName);
+        $endsWithIds = substr($fieldName, $l - 3, 3) === 'Ids';
+        if ($endsWithIds) {
+            $keyWithoutIds = substr($fieldName, 0, $l - 3);
+            if (isset($this->fields[$keyWithoutIds]) && $this->fields[$keyWithoutIds] instanceof ForeignKeysField) {
+                return $this->fields[$keyWithoutIds] !== null;
+            }
+        }
+
         return $this->fields[$fieldName] !== null;
     }
 
