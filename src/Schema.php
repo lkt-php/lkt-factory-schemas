@@ -74,13 +74,15 @@ final class Schema
     protected $fields = [];
 
     // Pivot exclusive data
-    protected $pivot = false;
+    protected bool $pivot = false;
 
     /** @var InstanceSettings */
     protected $instanceSettings;
 
     protected $countableField = '';
-    protected $itemsPerPage = 0;
+    protected int $itemsPerPage = 0;
+
+    protected bool $registeredAsLib = false;
 
     /**
      * @return Schema[]
@@ -201,6 +203,9 @@ final class Schema
         $this->table = new TableValue($table);
         $this->component = new ComponentValue($component);
         $this->pivot = $isPivot;
+        $debug = debug_backtrace()[1]['file'];
+        $path = realpath($debug);
+        $this->registeredAsLib = str_contains($path, '/vendor') || str_contains($path, '/lkt-php');
     }
 
     public function addAccessPolicy(string|AccessPolicy $policy, array $availableFields = [], array $availableCompositionFields = []): static
@@ -235,6 +240,11 @@ final class Schema
     public function hasRelatedAccessPolicy(): bool
     {
         return $this->hasAccessPolicy('lkt-related');
+    }
+
+    public function isLib(): bool
+    {
+        return $this->registeredAsLib;
     }
 
     public function setRelatedAccessPolicy(array $availableFields = [], array $availableCompositionFields = []): static
