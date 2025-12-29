@@ -597,6 +597,10 @@ final class Schema
 
     public function hasFieldDefined(string $fieldName): bool
     {
+        if ($this->getInstanceSettings()->hasBaseComponent()) {
+            $baseDefined = (static::get($this->getInstanceSettings()->getBaseComponent()))->hasFieldDefined($fieldName);
+            if ($baseDefined) return true;
+        }
         $l = strlen($fieldName);
         $endsWithId = substr($fieldName, $l - 2, 2) === 'Id';
         if ($endsWithId) {
