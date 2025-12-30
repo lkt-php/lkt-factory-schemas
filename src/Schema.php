@@ -13,6 +13,7 @@ use Lkt\Factory\Schemas\Fields\AbstractField;
 use Lkt\Factory\Schemas\Fields\BooleanField;
 use Lkt\Factory\Schemas\Fields\ColorField;
 use Lkt\Factory\Schemas\Fields\ConcatField;
+use Lkt\Factory\Schemas\Fields\ConstantValueField;
 use Lkt\Factory\Schemas\Fields\DateTimeField;
 use Lkt\Factory\Schemas\Fields\EmailField;
 use Lkt\Factory\Schemas\Fields\EncryptField;
@@ -205,7 +206,7 @@ final class Schema
         $this->pivot = $isPivot;
         $debug = debug_backtrace()[1]['file'];
         $path = realpath($debug);
-        $this->registeredAsLib = str_contains($path, '/vendor') || str_contains($path, '/lkt-php');
+        $this->registeredAsLib = str_contains($path, '/vendor');
     }
 
     public function addAccessPolicy(string|AccessPolicy $policy, array $availableFields = [], array $availableCompositionFields = []): static
@@ -361,7 +362,7 @@ final class Schema
     }
 
     /**
-     * @return array<ForeignKeyField|ForeignKeysField|PivotField|RelatedField|RelatedKeysField|RelatedKeysMergeField|StringField|BooleanField|ColorField|JSONField|ConcatField|DateTimeField|EmailField|EncryptField|FileField|FloatField|IntegerField|HTMLField|IdField|ImageField|IntegerChoiceField|MethodGetterField|UnixTimeStampField|UrlField|ValueListField>
+     * @return array<ForeignKeyField|ForeignKeysField|PivotField|RelatedField|RelatedKeysField|RelatedKeysMergeField|StringField|BooleanField|ColorField|JSONField|ConcatField|DateTimeField|EmailField|EncryptField|FileField|FloatField|IntegerField|HTMLField|IdField|ImageField|IntegerChoiceField|MethodGetterField|UnixTimeStampField|UrlField|ValueListField|ConstantValueField>
      */
     public function getFields(): array
     {
@@ -369,7 +370,7 @@ final class Schema
     }
 
     /**
-     * @return array<ForeignKeyField|ForeignKeysField|PivotField|RelatedField|RelatedKeysField|RelatedKeysMergeField|StringField|BooleanField|ColorField|JSONField|ConcatField|DateTimeField|EmailField|EncryptField|FileField|FloatField|IntegerField|HTMLField|IdField|ImageField|IntegerChoiceField|MethodGetterField|UnixTimeStampField|UrlField|ValueListField>
+     * @return array<ForeignKeyField|ForeignKeysField|PivotField|RelatedField|RelatedKeysField|RelatedKeysMergeField|StringField|BooleanField|ColorField|JSONField|ConcatField|DateTimeField|EmailField|EncryptField|FileField|FloatField|IntegerField|HTMLField|IdField|ImageField|IntegerChoiceField|MethodGetterField|UnixTimeStampField|UrlField|ValueListField|ConstantValueField>
      * @throws InvalidComponentException
      * @throws SchemaNotDefinedException
      */
@@ -406,7 +407,7 @@ final class Schema
     }
 
     /**
-     * @return array<StringField|BooleanField|ColorField|JSONField|ConcatField|DateTimeField|EmailField|EncryptField|FileField|FloatField|IntegerField|HTMLField|IdField|ImageField|IntegerChoiceField|MethodGetterField|UnixTimeStampField|UrlField|ValueListField>
+     * @return array<StringField|BooleanField|ColorField|JSONField|ConcatField|DateTimeField|EmailField|EncryptField|FileField|FloatField|IntegerField|HTMLField|IdField|ImageField|IntegerChoiceField|MethodGetterField|UnixTimeStampField|UrlField|ValueListField|ConstantValueField>
      * @throws InvalidComponentException
      * @throws SchemaNotDefinedException
      */
@@ -516,7 +517,8 @@ final class Schema
             if ($field instanceof PivotField
                 || $field instanceof RelatedField
                 || $field instanceof RelatedKeysMergeField
-                || $field instanceof AbstractComputedField) {
+                || $field instanceof AbstractComputedField
+                || $field instanceof ConstantValueField) {
                 return false;
             }
             return true;
@@ -550,7 +552,7 @@ final class Schema
     /**
      * @param string $field
      * @param bool $searchComposed
-     * @return null|AbstractField|ForeignKeyField|ForeignKeysField|PivotField|RelatedField|RelatedKeysField|RelatedKeysMergeField|StringField|BooleanField|ColorField|JSONField|ConcatField|DateTimeField|EmailField|EncryptField|FileField|FloatField|IntegerField|HTMLField|IdField|ImageField|IntegerChoiceField|MethodGetterField|UnixTimeStampField|UrlField|ValueListField
+     * @return null|AbstractField|ForeignKeyField|ForeignKeysField|PivotField|RelatedField|RelatedKeysField|RelatedKeysMergeField|StringField|BooleanField|ColorField|JSONField|ConcatField|DateTimeField|EmailField|EncryptField|FileField|FloatField|IntegerField|HTMLField|IdField|ImageField|IntegerChoiceField|MethodGetterField|UnixTimeStampField|UrlField|ValueListField|ConstantValueField
      * @throws InvalidComponentException
      * @throws SchemaNotDefinedException
      */
