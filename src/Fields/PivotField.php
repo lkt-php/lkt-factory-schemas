@@ -9,7 +9,6 @@ use Lkt\Factory\Schemas\Traits\FieldWithOrderOptionTrait;
 use Lkt\Factory\Schemas\Traits\FieldWithPivotOptionTrait;
 use Lkt\Factory\Schemas\Traits\FieldWithWhereOptionTrait;
 use Lkt\Factory\Schemas\Values\ComponentValue;
-use UriDesigner\Portfolio\Instances\BenchmarkToProject;
 
 class PivotField extends AbstractField
 {
