@@ -273,7 +273,7 @@ final class InstanceSettings
         $class = $this->getClassToBeExtended();
         return $class !== ''
             && class_exists($class)
-            && defined("{$class}::GENERATED_TYPE");
+            && defined("{$class}::COMPONENT");
     }
 
     public function getGeneratedClassFullPath(): string

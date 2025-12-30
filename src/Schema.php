@@ -381,7 +381,7 @@ final class Schema
         if ($this->instanceSettings instanceof InstanceSettings) {
             if ($this->instanceSettings->hasLegalExtendClass()) {
 
-                $code = $this->instanceSettings->getClassToBeExtended()::GENERATED_TYPE;
+                $code = $this->instanceSettings->getClassToBeExtended()::COMPONENT;
                 if ($code) {
                     $schema = Schema::get($code);
                     $fields = $schema->getAllFields();
