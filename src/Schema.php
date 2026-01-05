@@ -85,6 +85,20 @@ final class Schema
 
     protected bool $registeredAsLib = false;
 
+    protected string $ownershipField = '';
+
+    public function setOwnershipField(string $fieldName): static
+    {
+        $this->ownershipField = $fieldName;
+        return $this;
+    }
+
+    public function getOwnershipField(): AbstractField|null
+    {
+        if (!$this->ownershipField) return null;
+        return $this->getField($this->ownershipField);
+    }
+
     /**
      * @return Schema[]
      */
