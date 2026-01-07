@@ -717,6 +717,21 @@ final class Schema
     }
 
     /**
+     * @return array<PivotField>
+     * @throws InvalidComponentException
+     * @throws SchemaNotDefinedException
+     */
+    public function getPivotFields(): array
+    {
+        return array_filter($this->getAllFields(), function (AbstractField $field) {
+            if ($field instanceof PivotField) {
+                return true;
+            }
+            return false;
+        });
+    }
+
+    /**
      * @return array<RelatedField|ForeignKeyField>
      */
     public function getCompositionFields(): array
