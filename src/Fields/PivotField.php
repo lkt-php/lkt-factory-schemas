@@ -7,6 +7,7 @@ use Lkt\Factory\Schemas\Schema;
 use Lkt\Factory\Schemas\Traits\FieldWithComponentOptionTrait;
 use Lkt\Factory\Schemas\Traits\FieldWithOrderOptionTrait;
 use Lkt\Factory\Schemas\Traits\FieldWithPivotOptionTrait;
+use Lkt\Factory\Schemas\Traits\FieldWithRelatedAccessPolicyOptionTrait;
 use Lkt\Factory\Schemas\Traits\FieldWithWhereOptionTrait;
 use Lkt\Factory\Schemas\Values\ComponentValue;
 
@@ -15,7 +16,8 @@ class PivotField extends AbstractField
     use FieldWithComponentOptionTrait,
         FieldWithWhereOptionTrait,
         FieldWithOrderOptionTrait,
-        FieldWithPivotOptionTrait;
+        FieldWithPivotOptionTrait,
+        FieldWithRelatedAccessPolicyOptionTrait;
 
     protected Schema|null $pivotSchema = null;
 

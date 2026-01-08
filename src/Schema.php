@@ -269,7 +269,7 @@ final class Schema
         return $this;
     }
 
-    public function getAccessPolicyForRelationalField(string|AccessPolicyUsage|AccessPolicy $accessPolicy, RelatedField|ForeignKeyField|ForeignKeysField $field): ?AccessPolicy
+    public function getAccessPolicyForRelationalField(string|AccessPolicyUsage|AccessPolicy $accessPolicy, RelatedField|ForeignKeyField|ForeignKeysField|PivotField $field): ?AccessPolicy
     {
         if (is_string($accessPolicy)) $accessPolicy = $this->getAccessPolicy($accessPolicy);
         elseif ($accessPolicy instanceof AccessPolicyUsage) $accessPolicy = $this->getAccessPolicy($accessPolicy->name);
